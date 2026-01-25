@@ -1,0 +1,63 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Manage Postings - SkillBridge{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Job Postings</h1>
+        <a href="{% url 'create_job' %}" class="btn btn-primary">Post New Opportunity</a>
+    </div>
+
+    <div class="card glass-card">
+        {% if jobs %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border); text-align: left;">
+                    <th style="padding: 1rem; color: var(--text-muted);">Title</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Company</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Posted Date</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Deadline</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Status</th>
+                    <th style="padding: 1rem; color: var(--text-muted); text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 1rem; font-weight: 500;">{{ job.title }}</td>
+                    <td style="padding: 1rem;">{{ job.company }}</td>
+                    <td style="padding: 1rem; color: var(--text-muted); font-size: 0.9rem;">{{ job.created_at|date:"M d,
+                        Y" }}</td>
+                    <td style="padding: 1rem;">
+                        {% if job.deadline < now %} <span style="color: var(--danger);">Expired</span>
+                            {% else %}
+                            {{ job.deadline|date:"M d, Y" }}
+                            {% endif %}
+                    </td>
+                    <td style="padding: 1rem;">
+                        {% if job.is_active %}
+                        <span class="badge badge-success">Active</span>
+                        {% else %}
+                        <span class="badge badge-warning">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem; text-align: right;">
+                        <a href="{% url 'update_job' job.pk %}" class="btn btn-outline btn-sm"
+                            style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Edit</a>
+                        <a href="{% url 'delete_job' job.pk %}" class="btn btn-outline btn-sm"
+                            style="padding: 0.2rem 0.5rem; font-size: 0.8rem; color: var(--danger); border-color: var(--danger);">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">No job postings found.</p>
+            <a href="{% url 'create_job' %}" class="btn btn-primary">Create Your First Posting</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

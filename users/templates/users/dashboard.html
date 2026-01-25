@@ -1,0 +1,153 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Dashboard - Campus Flow{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-0 fw-bold">Dashboard</h1>
+            <p class="text-muted">Overview of your activity and progress</p>
+        </div>
+        <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm">{{ role }}</span>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">Total Activities</p>
+                            <h3 class="fw-bold mb-0">12</h3>
+                        </div>
+                        <div class="icon-wrapper bg-light text-primary rounded-3 p-2 mb-0"
+                            style="width: auto; height: auto;">
+                            <i class="fas fa-chart-line fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card accent shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">Pending Actions</p>
+                            <h3 class="fw-bold mb-0">3</h3>
+                        </div>
+                        <div class="icon-wrapper bg-light text-warning rounded-3 p-2 mb-0"
+                            style="width: auto; height: auto;">
+                            <i class="fas fa-clock fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card success shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">Notifications</p>
+                            <h3 class="fw-bold mb-0">5</h3>
+                        </div>
+                        <div class="icon-wrapper bg-light text-success rounded-3 p-2 mb-0"
+                            style="width: auto; height: auto;">
+                            <i class="fas fa-bell fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Welcome / Main Action Card -->
+        <div class="col-lg-8">
+            <div class="card glass-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-3 fw-bold">Welcome back, {{ user.first_name|default:user.username }}!</h2>
+                    <p class="text-muted mb-4">You have full access to the SkillBridge platform. Manage your acadmic
+                        journey, career opportunities, and more from this central hub.</p>
+
+                    {% if user.is_student %}
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{% url 'student_profile_edit' %}" class="btn btn-primary shadow-sm"><i
+                                class="fas fa-user-edit me-2"></i> Update Profile</a>
+                        <a href="{% url 'internship_list' %}" class="btn btn-outline-primary"><i
+                                class="fas fa-search me-2"></i> Find Internships</a>
+                        <a href="{% url 'application_list' %}" class="btn btn-outline-primary"><i
+                                class="fas fa-file-alt me-2"></i> My Applications</a>
+                    </div>
+                    {% elif user.is_placement_cell %}
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{% url 'create_job' %}" class="btn btn-primary shadow-sm"><i
+                                class="fas fa-plus me-2"></i> Post Opportunity</a>
+                        <a href="{% url 'manage_jobs' %}" class="btn btn-outline-primary"><i
+                                class="fas fa-list me-2"></i> Manage Listings</a>
+                        <a href="{% url 'placement_analytics' %}" class="btn btn-outline-primary"><i
+                                class="fas fa-chart-bar me-2"></i> Analytics</a>
+                    </div>
+                    {% elif user.is_faculty %}
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="#" class="btn btn-primary shadow-sm"><i class="fas fa-users me-2"></i> View Mentees</a>
+                        <a href="#" class="btn btn-outline-primary"><i class="fas fa-check me-2"></i> Approve
+                            Requests</a>
+                    </div>
+                    {% elif user.is_industry %}
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="#" class="btn btn-primary shadow-sm"><i class="fas fa-user-tie me-2"></i> View
+                            Interns</a>
+                        <a href="#" class="btn btn-outline-primary"><i class="fas fa-comment me-2"></i> Submit
+                            Feedback</a>
+                    </div>
+                    {% elif user.is_employer %}
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="#" class="btn btn-primary shadow-sm"><i class="fas fa-briefcase me-2"></i> Post Job</a>
+                        <a href="#" class="btn btn-outline-primary"><i class="fas fa-file-contract me-2"></i> View
+                            Applications</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links / Secondary Card -->
+        <div class="col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <h3 class="h5 fw-bold mb-0">Announcements</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0 border-bottom">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold">Semester Exams</h6>
+                                <small class="text-muted">3 days ago</small>
+                            </div>
+                            <p class="mb-1 small text-muted">Final semester exam schedule has been released.</p>
+                        </div>
+                        <div class="list-group-item px-0 border-bottom">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold">Internship Drive</h6>
+                                <small class="text-muted">1 week ago</small>
+                            </div>
+                            <p class="mb-1 small text-muted">Google Campus drive registration is open till Friday.</p>
+                        </div>
+                        <div class="list-group-item px-0">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold">Guest Lecture</h6>
+                                <small class="text-muted">2 weeks ago</small>
+                            </div>
+                            <p class="mb-1 small text-muted">AI in Education by Dr. Smith on Monday.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Placement Analytics - SkillBridge{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        padding: 1.5rem;
+        border-radius: 12px;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0.5rem 0;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div style="margin-bottom: 2rem;">
+        <h1>Placement Analytics</h1>
+        <p style="color: var(--text-muted);">Real-time insights into recruitment and student performance.</p>
+    </div>
+
+    <!-- Key Metrics -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <div class="stat-card">
+            <span class="stat-label">Total Students</span>
+            <span class="stat-value">{{ total_students }}</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Total Jobs Posted</span>
+            <span class="stat-value">{{ total_postings }}</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Applications Received</span>
+            <span class="stat-value">{{ total_applications }}</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Students Placed</span>
+            <span class="stat-value" style="color: var(--secondary);">{{ placed_students }}</span>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+
+        <!-- Application Distribution -->
+        <div class="card glass-card">
+            <h3 style="margin-bottom: 1.5rem;">Most Popular Jobs</h3>
+            <div class="chart-container">
+                <canvas id="jobsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Status Funnel -->
+        <div class="card glass-card">
+            <h3 style="margin-bottom: 1.5rem;">Application Status</h3>
+            <div class="chart-container" style="display: flex; justify-content: center;">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Jobs Chart
+        const jobCtx = document.getElementById('jobsChart').getContext('2d');
+        new Chart(jobCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ job_labels| safe }},
+        datasets: [{
+            label: 'Applications',
+            data: {{ job_data| safe }},
+        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 1,
+        borderRadius: 4
+                }]
+            },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 }
+            }
+        }
+    }
+        });
+
+    // Status Chart
+    const statusData = {{ status_dist| safe }};
+    const statusLabels = statusData.map(item => item.status);
+    const statusCounts = statusData.map(item => item.count);
+    // Map status codes to readable labels if needed, doing simple for now
+
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusCounts,
+                backgroundColor: [
+                    '#3b82f6', // Applied - Primary
+                    '#8b5cf6', // Screening - Purple
+                    '#eab308', // Interview - Yellow
+                    '#10b981', // Offered - Green
+                    '#ef4444'  // Rejected - Red
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
+        }
+    });
+    });
+</script>
+{% endblock %}

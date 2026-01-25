@@ -1,0 +1,40 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Internships - SkillBridge{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <h1 style="margin-bottom: 2rem;">Available Opportunities</h1>
+
+    {% if jobs %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for job in jobs %}
+        <div class="card glass-card hover-lift">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                <div>
+                    <h3 style="margin-bottom: 0.25rem;">{{ job.title }}</h3>
+                    <p style="color: var(--secondary); font-weight: 500;">{{ job.company }}</p>
+                </div>
+                <span class="badge badge-success">Active</span>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    <strong>Stipend:</strong> {{ job.stipend_range }}
+                </p>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">
+                    <strong>Deadline:</strong> {{ job.deadline|date:"M d, Y" }}
+                </p>
+            </div>
+
+            <a href="{% url 'internship_detail' job.id %}" class="btn btn-outline" style="width: 100%;">View Details</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card glass-card" style="text-align: center; padding: 4rem;">
+        <p style="color: var(--text-muted); font-size: 1.1rem;">No active internships found at the moment.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

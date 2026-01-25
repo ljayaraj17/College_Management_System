@@ -1,0 +1,110 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Edit Profile - SkillBridge{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in" style="max-width: 800px; margin: 0 auto;">
+    <h1 style="margin-bottom: 2rem;">Edit Profile</h1>
+
+    <div class="card glass-card">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="messages" style="margin-bottom: 1rem; color: var(--danger);">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <h3 style="margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Basic Info</h3>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label class="form-label">Profile Photo</label>
+                {{ form.profile_photo }}
+                {{ form.profile_photo.errors }}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    {{ form.first_name }}
+                    {{ form.first_name.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    {{ form.last_name }}
+                    {{ form.last_name.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Department</label>
+                    {{ form.department }}
+                    <small style="color: var(--text-muted);">{{ form.department.help_text }}</small>
+                    {{ form.department.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Batch</label>
+                    {{ form.batch }}
+                    <small style="color: var(--text-muted);">{{ form.batch.help_text }}</small>
+                    {{ form.batch.errors }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Bio</label>
+                {{ form.bio }}
+                {{ form.bio.errors }}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label class="form-label">CGPA</label>
+                    {{ form.cgpa }}
+                    {{ form.cgpa.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">LinkedIn URL</label>
+                    {{ form.linkedin_url }}
+                    {{ form.linkedin_url.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">GitHub URL</label>
+                    {{ form.github_url }}
+                    {{ form.github_url.errors }}
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Professional</h3>
+            <div class="form-group">
+                <label class="form-label">Skills</label>
+                {{ form.skills }}
+                <small style="color: var(--text-muted);">Comma separated (e.g. Python, Java, Leadership)</small>
+                {{ form.skills.errors }}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label class="form-label">Resume</label>
+                    {{ form.resume }}
+                    {{ form.resume.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cover Letter</label>
+                    {{ form.cover_letter }}
+                    {{ form.cover_letter.errors }}
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Certifications</h3>
+            <div style="margin-bottom: 1.5rem;">
+                <p class="text-muted">To add new certifications, please use the <a href="{% url 'add_badge' %}">Add Certification</a> page.</p>
+                <p class="text-muted">View all your certificates <a href="{% url 'certificate_list' %}">here</a>.</p>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'student_profile' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

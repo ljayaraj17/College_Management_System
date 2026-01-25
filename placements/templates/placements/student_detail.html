@@ -1,0 +1,129 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Student Info Sidebar -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    {% if profile.profile_photo %}
+                    <img src="{{ profile.profile_photo.url }}" class="rounded-circle mb-3" width="120" height="120"
+                        alt="Avatar">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3"
+                        style="width: 120px; height: 120px; font-size: 3rem;">
+                        {{ student_user.username|make_list|first|upper }}
+                    </div>
+                    {% endif %}
+                    <h4>{{ student_user.get_full_name|default:student_user.username }}</h4>
+                    <p class="text-muted">{{ student_user.department }}</p>
+
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        {% if profile.linkedin_url %}
+                        <a href="{{ profile.linkedin_url }}" target="_blank" class="btn btn-outline-primary btn-sm"><i
+                                class="bi bi-linkedin"></i> LinkedIn</a>
+                        {% endif %}
+                        {% if profile.github_url %}
+                        <a href="{{ profile.github_url }}" target="_blank" class="btn btn-outline-dark btn-sm"><i
+                                class="bi bi-github"></i> GitHub</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Email:</strong> {{ student_user.email }}</li>
+                    <li class="list-group-item"><strong>Batch:</strong> {{ profile.batch|default:"N/A" }}</li>
+                    <li class="list-group-item"><strong>CGPA:</strong> {{ profile.cgpa|default:"N/A" }}</li>
+                    <li class="list-group-item"><strong>Skills:</strong> {{ profile.skills|default:"N/A" }}</li>
+                </ul>
+            </div>
+            <a href="{% url 'student_list' %}" class="btn btn-outline-secondary w-100 mb-3">Back to List</a>
+        </div>
+
+        <!-- Certificates & Badges -->
+        <div class="col-md-8">
+            <h3 class="mb-3">Certificates & Verification</h3>
+
+            {% if certificates %}
+            <div class="row">
+                {% for cert in certificates %}
+                <div class="col-md-12 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title">{{ cert.name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ cert.issuing_organization }}</h6>
+                                <p class="card-text small text-muted">Issued on: {{ cert.issue_date }}</p>
+                                <a href="{{ cert.certificate_file.url }}" target="_blank"
+                                    class="btn btn-sm btn-info text-white">View Certificate</a>
+                            </div>
+                            <div class="text-end">
+                                {% if cert.is_verified %}
+                                <div class="text-success mb-2">
+                                    <i class="bi bi-check-circle-fill" style="font-size: 1.5rem;"></i><br>
+                                    <span class="fw-bold">Verified</span>
+                                </div>
+                                <span class="badge bg-primary">Badge Awarded</span>
+                                {% else %}
+                                <div class="text-warning mb-2">
+                                    <i class="bi bi-exclamation-circle" style="font-size: 1.5rem;"></i><br>
+                                    <span class="fw-bold">Pending</span>
+                                </div>
+                                <form method="post" action="{% url 'verify_certificate' cert.pk %}"
+                                    onsubmit="return confirm('Are you sure you want to verify this certificate?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Verify & Generate
+                                        Badge</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">No certificates uploaded by this student.</div>
+            {% endif %}
+
+            <hr class="my-4">
+
+            <h3 class="mb-3">Other Verification</h3>
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5>STEM Badge</h5>
+                    {% if profile.stem_badge %}
+                    <a href="{{ profile.stem_badge.url }}" class="btn btn-sm btn-info">View File</a>
+                    {% if profile.stem_badge_verified %}
+                    <span class="badge bg-success ms-2">Verified</span>
+                    {% else %}
+                    <span class="badge bg-warning ms-2">Pending</span>
+                    <!-- Additional logic for STEM verification could go here -->
+                    {% endif %}
+                    {% else %}
+                    <span class="text-muted">Not uploaded</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>AI/ML Certificate</h5>
+                    {% if profile.aiml_cert %}
+                    <a href="{{ profile.aiml_cert.url }}" class="btn btn-sm btn-info">View File</a>
+                    {% if profile.aiml_cert_verified %}
+                    <span class="badge bg-success ms-2">Verified</span>
+                    {% else %}
+                    <span class="badge bg-warning ms-2">Pending</span>
+                    <!-- Additional logic for AI/ML verification could go here -->
+                    {% endif %}
+                    {% else %}
+                    <span class="text-muted">Not uploaded</span>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

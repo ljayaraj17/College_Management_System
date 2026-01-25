@@ -1,0 +1,42 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Manage Faculty - SkillBridge{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Faculty Mentors</h1>
+        <a href="{% url 'add_faculty' %}" class="btn btn-primary">+ Add Faculty</a>
+    </div>
+
+    <div class="card glass-card">
+        {% if faculty_members %}
+        <table class="table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid var(--border);">
+                    <th style="padding: 1rem;">Username</th>
+                    <th style="padding: 1rem;">Full Name</th>
+                    <th style="padding: 1rem;">Department</th>
+                    <th style="padding: 1rem;">Email</th>
+                    <th style="padding: 1rem;">Date Joined</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for faculty in faculty_members %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 1rem;">{{ faculty.username }}</td>
+                    <td style="padding: 1rem;">{{ faculty.get_full_name }}</td>
+                    <td style="padding: 1rem;">{{ faculty.department }}</td>
+                    <td style="padding: 1rem;">{{ faculty.email }}</td>
+                    <td style="padding: 1rem;">{{ faculty.date_joined|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <p style="color: var(--text-muted); font-size: 1.2rem;">No faculty members found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

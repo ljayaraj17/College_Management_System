@@ -1,0 +1,72 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Post{% endif %} Opportunity - SkillBridge{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in" style="max-width: 800px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>{% if form.instance.pk %}Edit{% else %}Post{% endif %} Opportunity</h1>
+        <a href="{% url 'manage_jobs' %}" class="btn btn-outline">Back to List</a>
+    </div>
+
+    <div class="card glass-card">
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <div class="messages" style="color: var(--danger); margin-bottom: 1rem;">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Job Title</label>
+                    {{ form.title }}
+                    {{ form.title.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Company</label>
+                    {{ form.company }}
+                    {{ form.company.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Department</label>
+                    {{ form.department }}
+                    {{ form.department.errors }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                {{ form.description }}
+                {{ form.description.errors }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Key Competencies</label>
+                {{ form.competencies }}
+                <small style="color: var(--text-muted);">Comma separated tags (e.g., Python, Teamwork)</small>
+                {{ form.competencies.errors }}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Stipend Range</label>
+                    {{ form.stipend_range }}
+                    {{ form.stipend_range.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Application Deadline</label>
+                    {{ form.deadline }}
+                    {{ form.deadline.errors }}
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Save Opportunity</button>
+                <a href="{% url 'manage_jobs' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

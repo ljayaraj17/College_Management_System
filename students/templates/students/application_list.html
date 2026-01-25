@@ -1,0 +1,57 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}My Applications - SkillBridge{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <h1 style="margin-bottom: 2rem;">My Applications</h1>
+
+    {% if applications %}
+    <div class="card glass-card" style="padding: 0; overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead style="background: rgba(0,0,0,0.02); border-bottom: 1px solid var(--border);">
+                <tr>
+                    <th style="padding: 1rem; text-align: left; font-weight: 600;">Role</th>
+                    <th style="padding: 1rem; text-align: left; font-weight: 600;">Company</th>
+                    <th style="padding: 1rem; text-align: left; font-weight: 600;">Applied Date</th>
+                    <th style="padding: 1rem; text-align: left; font-weight: 600;">Status</th>
+                    <th style="padding: 1rem; text-align: right; font-weight: 600;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 1rem;">
+                        <a href="{% url 'internship_detail' app.job.id %}" style="font-weight: 500;">{{ app.job.title
+                            }}</a>
+                    </td>
+                    <td style="padding: 1rem;">{{ app.job.company }}</td>
+                    <td style="padding: 1rem; color: var(--text-muted);">{{ app.applied_at|date:"M d, Y" }}</td>
+                    <td style="padding: 1rem;">
+                        {% if app.status == 'APPLIED' %}
+                        <span class="badge badge-warning">Applied</span>
+                        {% elif app.status == 'OFFERED' %}
+                        <span class="badge badge-success">Offered</span>
+                        {% elif app.status == 'REJECTED' %}
+                        <span class="badge badge-danger">Rejected</span>
+                        {% else %}
+                        <span class="badge" style="background: #e2e8f0;">{{ app.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem; text-align: right;">
+                        <a href="{% url 'internship_detail' app.job.id %}" class="btn btn-outline"
+                            style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card glass-card" style="text-align: center; padding: 4rem;">
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">You haven't applied to any internships yet.</p>
+        <a href="{% url 'internship_list' %}" class="btn btn-primary">Browse Internships</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

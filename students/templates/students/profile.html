@@ -1,0 +1,191 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}My Profile - SkillBridge{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>My Profile</h1>
+        <a href="{% url 'student_profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+    </div>
+
+    <!-- Personal details -->
+    <div class="card glass-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; gap: 2rem; align-items: start;">
+            <div style="flex-shrink: 0;">
+                {% if profile.profile_photo %}
+                <img src="{{ profile.profile_photo.url }}" alt="Profile Photo"
+                    style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid var(--border);">
+                {% else %}
+                <div
+                    style="width: 120px; height: 120px; background: var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-muted);">
+                    {{ user.first_name|first }}{{ user.last_name|first }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div style="flex-grow: 1;">
+                <h2 style="margin-bottom: 0.5rem;">{{ user.get_full_name|default:user.username }}</h2>
+                <p style="color: var(--secondary); font-weight: 500; margin-bottom: 1rem;">
+                    {{ user.department|default:"Department Not Set" }}
+                    {% if profile.batch %} &bull; {{ profile.batch }}{% endif %}
+                </p>
+
+                {% if profile.bio %}
+                <p style="color: var(--text-main); margin-bottom: 1.5rem; line-height: 1.6;">{{ profile.bio }}</p>
+                {% endif %}
+
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                    <div>
+                        <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">Email</label>
+                        <span>{{ user.email }}</span>
+                    </div>
+                    {% if profile.cgpa %}
+                    <div>
+                        <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">CGPA</label>
+                        <span style="font-weight: 600;">{{ profile.cgpa }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if profile.linkedin_url or profile.github_url %}
+                    <div>
+                        <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">Socials</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            {% if profile.linkedin_url %}
+                            <a href="{{ profile.linkedin_url }}" target="_blank" style="color: #0077b5;">LinkedIn</a>
+                            {% endif %}
+                            {% if profile.linkedin_url and profile.github_url %} &bull; {% endif %}
+                            {% if profile.github_url %}
+                            <a href="{{ profile.github_url }}" target="_blank" style="color: #333;">GitHub</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional details -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="margin-bottom: 1rem;">Professional Assets</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+            <!-- Resumes & Skills -->
+            <div>
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Resume & Skills</h3>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Resume</label>
+                    {% if profile.resume %}
+                    <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-outline btn-sm">Download
+                        Resume</a>
+                    {% else %}
+                    <span style="color: var(--text-muted);">No resume uploaded</span>
+                    {% endif %}
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Cover Letter</label>
+                    {% if profile.cover_letter %}
+                    <a href="{{ profile.cover_letter.url }}" target="_blank" class="btn btn-outline btn-sm">Download
+                        Cover Letter</a>
+                    {% else %}
+                    <span style="color: var(--text-muted);">No cover letter uploaded</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Skills</label>
+                    {% if profile.skills %}
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        {% for skill in profile.skills.splitlines %}
+                        {% if skill|length > 0 %}
+                        <!-- Crude split, refined in view or templatetag usually, assuming comma separated actually -->
+                        {% endif %}
+                        <!-- Just displaying raw text for now if comma separated is ambiguous in storage -->
+                        <p>{{ profile.skills }}</p>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <span style="color: var(--text-muted);">No skills added</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Badges -->
+            <div>
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Verifications</h3>
+
+                <!-- Dynamic Certificates -->
+                {% for cert in profile.user.certificates.all %}
+                <div class="card" style="background: rgba(0,0,0,0.02); margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>{{ cert.name }}</span>
+                        {% if cert.is_verified %}
+                        <span class="badge badge-success"
+                            style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px;">Verified</span>
+                        {% else %}
+                        <span class="badge badge-warning"
+                            style="background-color: #ffc107; color: black; padding: 4px 8px; border-radius: 4px;">Pending</span>
+                        {% endif %}
+                    </div>
+                    <small class="text-muted d-block mt-1">{{ cert.issuing_organization }}</small>
+
+                    <div class="mt-2 d-flex gap-2">
+                        <a href="{{ cert.certificate_file.url }}" target="_blank" style="font-size: 0.8rem;">View
+                            Certificate</a>
+                        {% if cert.is_verified and cert.skill_badge %}
+                        <a href="{{ cert.skill_badge.url }}" target="_blank"
+                            style="font-size: 0.8rem; color: #6f42c1;">View Badge</a>
+                        {% elif cert.is_verified %}
+                        <!-- Fallback badge display if no custom image is set but it is verified -->
+                        <span style="font-size: 0.8rem; color: #28a745;"><i class="bi bi-patch-check-fill"></i> Badge
+                            Earned</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Legacy/Specific Fields (STEM/AIML) -->
+                {% if profile.stem_badge %}
+                <div class="card" style="background: rgba(0,0,0,0.02); margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>STEM Badge</span>
+                        {% if profile.stem_badge_verified %}
+                        <span class="badge badge-success"
+                            style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px;">Verified</span>
+                        {% else %}
+                        <span class="badge badge-warning"
+                            style="background-color: #ffc107; color: black; padding: 4px 8px; border-radius: 4px;">Pending</span>
+                        {% endif %}
+                    </div>
+                    {% if profile.stem_badge %}
+                    <a href="{{ profile.stem_badge.url }}" target="_blank"
+                        style="font-size: 0.8rem; margin-top: 0.5rem; display: block;">View Upload</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if profile.aiml_cert %}
+                <div class="card" style="background: rgba(0,0,0,0.02);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>AI/ML Certificate</span>
+                        {% if profile.aiml_cert_verified %}
+                        <span class="badge badge-success"
+                            style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px;">Verified</span>
+                        {% else %}
+                        <span class="badge badge-warning"
+                            style="background-color: #ffc107; color: black; padding: 4px 8px; border-radius: 4px;">Pending</span>
+                        {% endif %}
+                    </div>
+                    {% if profile.aiml_cert %}
+                    <a href="{{ profile.aiml_cert.url }}" target="_blank"
+                        style="font-size: 0.8rem; margin-top: 0.5rem; display: block;">View Upload</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

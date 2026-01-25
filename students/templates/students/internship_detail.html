@@ -1,0 +1,75 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}{{ job.title }} - SkillBridge{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in" style="max-width: 900px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <a href="{% url 'internship_list' %}" style="color: var(--text-muted); font-size: 0.9rem;">&larr; Back to
+            Internships</a>
+    </div>
+
+    <div class="card glass-card">
+        <div
+            style="display: flex; justify-content: space-between; align-items: start; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
+            <div>
+                <h1 style="margin-bottom: 0.5rem;">{{ job.title }}</h1>
+                <h2 style="font-size: 1.25rem; color: var(--secondary);">{{ job.company }}</h2>
+                <div style="margin-top: 1rem; display: flex; gap: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+                    <span>Posted: {{ job.created_at|date:"M d, Y" }}</span>
+                    <span>&bull;</span>
+                    <span>Deadline: {{ job.deadline|date:"M d, Y" }}</span>
+                </div>
+            </div>
+
+            <div>
+                {% if has_applied %}
+                <button class="btn btn-secondary" disabled style="opacity: 0.7; cursor: not-allowed;">Applied</button>
+                <p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--success); text-align: center;">Application
+                    Submitted</p>
+                {% else %}
+                <form action="{% url 'apply_job' job.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Apply Now</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+            <div>
+                <h3 style="margin-bottom: 1rem;">Description</h3>
+                <div style="color: var(--text-main); line-height: 1.6;">
+                    {{ job.description|linebreaks }}
+                </div>
+
+                <h3 style="margin-bottom: 1rem; margin-top: 2rem;">Requirements</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    {% if job.get_competencies_list %}
+                    {% for tag in job.get_competencies_list %}
+                    <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: var(--secondary);">{{ tag
+                        }}</span>
+                    {% endfor %}
+                    {% else %}
+                    <span style="color: var(--text-muted);">{{ job.competencies }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.02); padding: 1.5rem; border-radius: 8px; height: fit-content;">
+                <h4 style="margin-bottom: 1rem;">Job Overview</h4>
+
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted);">Stipend</label>
+                    <p style="font-weight: 500;">{{ job.stipend_range }}</p>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted);">Department</label>
+                    <p style="font-weight: 500;">{{ job.department|default:"Open" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

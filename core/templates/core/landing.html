@@ -1,0 +1,152 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Welcome - Campus Flow{% endblock %}
+
+{% block content %}
+<style>
+    .landing-wrapper {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--background);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Abstract shapes for visual interest */
+    .shape-blob {
+        position: absolute;
+        filter: blur(80px);
+        opacity: 0.4;
+        z-index: 0;
+        animation: float 10s ease-in-out infinite;
+    }
+
+    .shape-1 {
+        top: -10%;
+        left: -5%;
+        width: 500px;
+        height: 500px;
+        background: var(--secondary);
+        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        animation-delay: 0s;
+    }
+
+    .shape-2 {
+        bottom: -10%;
+        right: -5%;
+        width: 400px;
+        height: 400px;
+        background: var(--accent);
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        animation-delay: -5s;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        50% {
+            transform: translate(20px, 20px) rotate(5deg);
+        }
+
+        100% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+    }
+
+    .landing-content {
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 4rem 3rem;
+        border-radius: 24px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        max-width: 700px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .hero-title {
+        color: var(--primary);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 1rem;
+        font-size: 3.5rem;
+    }
+
+    .hero-subtitle {
+        color: var(--text-muted);
+        font-size: 1.25rem;
+        font-weight: 400;
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+    }
+
+    .btn-custom-primary {
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+        color: white;
+        padding: 0.8rem 2.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-custom-primary:hover {
+        background-color: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-custom-outline {
+        color: var(--secondary);
+        border: 2px solid var(--secondary);
+        padding: 0.8rem 2.5rem;
+        font-weight: 600;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .btn-custom-outline:hover {
+        background-color: var(--secondary);
+        color: white;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="landing-wrapper">
+    <div class="shape-blob shape-1"></div>
+    <div class="shape-blob shape-2"></div>
+
+    <div class="container d-flex justify-content-center">
+        <div class="landing-content animate-fade-in-up">
+            <h1 class="hero-title">Campus Flow.</h1>
+            <p class="hero-subtitle">
+                Revolutionizing campus management with seamless integration,<br>
+                smart profiling, and global opportunities.
+            </p>
+
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn btn-custom-primary rounded-pill">
+                    Go to Dashboard
+                </a>
+                {% else %}
+                <a href="{% url 'signup' %}" class="btn btn-custom-primary rounded-pill">
+                    Get Started
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-custom-outline rounded-pill">
+                    Login
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
