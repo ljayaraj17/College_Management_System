@@ -1,152 +1,293 @@
-{% extends 'layouts/base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="en">
 
-{% block title %}Welcome - Campus Flow{% endblock %}
-
-{% block content %}
-<style>
-    .landing-wrapper {
-        min-height: 85vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: var(--background);
-        position: relative;
-        overflow: hidden;
-    }
-
-    /* Abstract shapes for visual interest */
-    .shape-blob {
-        position: absolute;
-        filter: blur(80px);
-        opacity: 0.4;
-        z-index: 0;
-        animation: float 10s ease-in-out infinite;
-    }
-
-    .shape-1 {
-        top: -10%;
-        left: -5%;
-        width: 500px;
-        height: 500px;
-        background: var(--secondary);
-        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-        animation-delay: 0s;
-    }
-
-    .shape-2 {
-        bottom: -10%;
-        right: -5%;
-        width: 400px;
-        height: 400px;
-        background: var(--accent);
-        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-        animation-delay: -5s;
-    }
-
-    @keyframes float {
-        0% {
-            transform: translate(0, 0) rotate(0deg);
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EduPulse CMS - AI Powered Education</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
         }
-
-        50% {
-            transform: translate(20px, 20px) rotate(5deg);
+    </script>
+    <style type="text/tailwindcss">
+        body {
+          font-family: 'Lexend', sans-serif;
+          min-height: max(884px, 100dvh);
         }
-
-        100% {
-            transform: translate(0, 0) rotate(0deg);
+        .glass-nav {
+          background: rgba(16, 22, 34, 0.8);
+          backdrop-filter: blur(12px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-    }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
 
-    .landing-content {
-        position: relative;
-        z-index: 1;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        padding: 4rem 3rem;
-        border-radius: 24px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        max-width: 700px;
-        width: 100%;
-        text-align: center;
-    }
-
-    .hero-title {
-        color: var(--primary);
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        margin-bottom: 1rem;
-        font-size: 3.5rem;
-    }
-
-    .hero-subtitle {
-        color: var(--text-muted);
-        font-size: 1.25rem;
-        font-weight: 400;
-        margin-bottom: 2.5rem;
-        line-height: 1.6;
-    }
-
-    .btn-custom-primary {
-        background-color: var(--secondary);
-        border-color: var(--secondary);
-        color: white;
-        padding: 0.8rem 2.5rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .btn-custom-primary:hover {
-        background-color: #1d4ed8;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-    }
-
-    .btn-custom-outline {
-        color: var(--secondary);
-        border: 2px solid var(--secondary);
-        padding: 0.8rem 2.5rem;
-        font-weight: 600;
-        background: transparent;
-        transition: all 0.3s ease;
-    }
-
-    .btn-custom-outline:hover {
-        background-color: var(--secondary);
-        color: white;
-        transform: translateY(-2px);
-    }
-</style>
-
-<div class="landing-wrapper">
-    <div class="shape-blob shape-1"></div>
-    <div class="shape-blob shape-2"></div>
-
-    <div class="container d-flex justify-content-center">
-        <div class="landing-content animate-fade-in-up">
-            <h1 class="hero-title">Campus Flow.</h1>
-            <p class="hero-subtitle">
-                Revolutionizing campus management with seamless integration,<br>
-                smart profiling, and global opportunities.
-            </p>
-
-            <div class="d-flex gap-3 justify-content-center flex-wrap">
+<body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-nav">
+        <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl">school</span>
+                <span class="text-xl font-bold tracking-tight">EduPulse</span>
+            </div>
+            <div class="flex items-center gap-4">
                 {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="btn btn-custom-primary rounded-pill">
-                    Go to Dashboard
-                </a>
+                <a class="text-sm font-semibold hover:text-primary transition-colors"
+                    href="{% url 'dashboard' %}">Dashboard</a>
+                <form action="{% url 'logout' %}" method="post" id="logout-form-nav" style="display: none;">{%
+                    csrf_token %}</form>
+                <button onclick="document.getElementById('logout-form-nav').submit();"
+                    class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-primary/20">
+                    Logout
+                </button>
                 {% else %}
-                <a href="{% url 'signup' %}" class="btn btn-custom-primary rounded-pill">
-                    Get Started
-                </a>
-                <a href="{% url 'login' %}" class="btn btn-custom-outline rounded-pill">
-                    Login
+                <a class="text-sm font-semibold hover:text-primary transition-colors" href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}"
+                    class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-primary/20">
+                    Join
                 </a>
                 {% endif %}
             </div>
         </div>
+    </nav>
+
+    <header class="pt-28 pb-16 px-6 relative overflow-hidden">
+        <div class="absolute top-0 right-0 -z-10 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -z-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div class="max-w-md mx-auto text-center @container">
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-6">
+                <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                Next-Gen Campus Intelligence
+            </div>
+            <h1 class="text-4xl @[480px]:text-5xl font-black leading-tight tracking-tight mb-6">
+                Empowering <span class="text-primary">Education</span> with AI
+            </h1>
+            <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed mb-10">
+                A comprehensive RAG-powered management system for students, faculty, and administrators.
+            </p>
+            <div class="flex flex-col items-center">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}"
+                    class="w-full max-w-[280px] bg-primary text-white h-14 rounded-xl text-lg font-bold shadow-xl shadow-primary/30 flex items-center justify-center gap-2">
+                    Open Dashboard <span class="material-symbols-outlined">space_dashboard</span>
+                </a>
+                {% else %}
+                <a href="{% url 'signup' %}"
+                    class="w-full max-w-[280px] bg-primary text-white h-14 rounded-xl text-lg font-bold shadow-xl shadow-primary/30 flex items-center justify-center gap-2">
+                    Get Started <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mt-14 rounded-2xl overflow-hidden shadow-2xl border border-white/10 aspect-[16/10] bg-slate-800 relative group"
+            data-alt="Futuristic digital campus visualization with students and AI overlays"
+            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA8XGNvBXNSugVqv3AucnW-u4_Ww6vkGWtA4M8iAqgg3nPUwxY07jB00VCin0Ti2kPcLTo_ZzRCKP6gh8uUQkzgMOWDIBreWtSnwY3sSYO_KVfNpmbaYvBqH5sk4dyTuPrqeqiM-y2HrDadpxUHZeRWQQUPB3lTGPq8tSfAtgQZZXlzwdoO2b9Q3iUA_zjxIBpmgElUee0sqylOHUy_zTFLuHpBtTxatLsd7a9wLfwEd3912Gi0YlPRd5A0poZMKX2sLXEqaaRn7BQ'); background-size: cover; background-position: center;">
+            <div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
+        </div>
+    </header>
+
+    <section class="py-16 px-6 bg-slate-50 dark:bg-slate-900/50">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-4">Core Innovation</h2>
+            <p class="text-slate-500 dark:text-slate-400">Transforming institutional efficiency through specialized AI
+                agents.</p>
+        </div>
+        <div class="grid gap-6">
+            <div
+                class="bg-white dark:bg-background-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm group hover:border-primary/50 transition-all">
+                <div
+                    class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all">
+                    <span class="material-symbols-outlined">chat_bubble</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">AI Academic Chatbot</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm leading-normal">
+                    Instant, context-aware support using RAG (Retrieval Augmented Generation) to answer academic and
+                    administrative queries.
+                </p>
+            </div>
+            <div
+                class="bg-white dark:bg-background-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm group hover:border-primary/50 transition-all">
+                <div
+                    class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all">
+                    <span class="material-symbols-outlined">admin_panel_settings</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Streamlined Admin</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm leading-normal">
+                    Centralize records, automate complex scheduling, and manage institutional resources with unified
+                    analytics.
+                </p>
+            </div>
+            <div
+                class="bg-white dark:bg-background-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm group hover:border-primary/50 transition-all">
+                <div
+                    class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all">
+                    <span class="material-symbols-outlined">work</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Career &amp; Placement</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm leading-normal">
+                    AI-driven resume matching, skill gap analysis, and end-to-end placement workflow tracking for
+                    students.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 px-6">
+        <div class="mb-10">
+            <h2 class="text-3xl font-bold mb-3">Tailored Experience</h2>
+            <p class="text-slate-500 dark:text-slate-400">One platform, distinct portals for every campus member.</p>
+        </div>
+        <div class="space-y-4">
+            <div class="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <div class="size-14 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-primary text-2xl">person</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold">For Students</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Course info, grades, and 24/7 AI tutor
+                        support.</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+            </div>
+            <div class="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <div class="size-14 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-primary text-2xl">co_present</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold">For Faculty</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Attendance, automated grading, and research
+                        tools.</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+            </div>
+            <div class="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <div class="size-14 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-primary text-2xl">monitoring</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold">For Admin</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Global analytics, financial oversight, and
+                        policy automation.</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 bg-primary dark:bg-primary px-6 text-white rounded-t-3xl">
+        <div class="grid grid-cols-2 gap-8 text-center">
+            <div>
+                <div class="text-3xl font-black mb-1">98%</div>
+                <p class="text-white/70 text-sm">Response Accuracy</p>
+            </div>
+            <div>
+                <div class="text-3xl font-black mb-1">45%</div>
+                <p class="text-white/70 text-sm">Admin Work Reduction</p>
+            </div>
+            <div>
+                <div class="text-3xl font-black mb-1">200+</div>
+                <p class="text-white/70 text-sm">Institutions</p>
+            </div>
+            <div>
+                <div class="text-3xl font-black mb-1">10M+</div>
+                <p class="text-white/70 text-sm">Queries Handled</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-6 text-center bg-slate-100 dark:bg-slate-900">
+        <h2 class="text-3xl font-bold mb-6">Ready to innovate?</h2>
+        <p class="text-slate-500 dark:text-slate-400 mb-10">Join the waitlist for the fall intake and transform your
+            campus experience.</p>
+        <div class="space-y-4 max-w-sm mx-auto">
+            <input
+                class="w-full h-14 bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                placeholder="Enter institution email" type="email" />
+            {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}"
+                class="w-full bg-primary text-white h-14 rounded-xl flex items-center justify-center text-lg font-bold shadow-xl shadow-primary/30">
+                Go to Dashboard
+            </a>
+            {% else %}
+            <a href="{% url 'signup' %}"
+                class="w-full bg-primary text-white h-14 rounded-xl flex items-center justify-center text-lg font-bold shadow-xl shadow-primary/30">
+                Claim Early Access
+            </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <footer class="pb-32 pt-16 px-6 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800">
+        <div class="flex flex-col items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl">school</span>
+                <span class="text-2xl font-bold tracking-tight">EduPulse</span>
+            </div>
+            <div class="flex gap-8 text-slate-500 dark:text-slate-400 text-sm">
+                <a href="#">Security</a>
+                <a href="#">Privacy</a>
+                <a href="#">Contact</a>
+            </div>
+            <p class="text-xs text-slate-400 dark:text-slate-600 mt-4">
+                © 2024 EduPulse CMS. Powered by Enterprise RAG.
+            </p>
+        </div>
+    </footer>
+
+    <div
+        class="fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 pb-8 pt-2">
+        <div class="flex justify-around items-center px-4">
+            <a class="flex flex-col items-center gap-1 text-primary" href="{% url 'landing' %}">
+                <span class="material-symbols-outlined text-[28px] fill-1">home</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[28px]">stars</span>
+                <span class="text-[10px] font-medium">Features</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[28px]">info</span>
+                <span class="text-[10px] font-medium">About</span>
+            </a>
+            {% if user.is_authenticated %}
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="{% url 'dashboard' %}">
+                <span class="material-symbols-outlined text-[28px]">space_dashboard</span>
+                <span class="text-[10px] font-medium">Dashboard</span>
+            </a>
+            {% else %}
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="{% url 'login' %}">
+                <span class="material-symbols-outlined text-[28px]">login</span>
+                <span class="text-[10px] font-medium">Login</span>
+            </a>
+            {% endif %}
+        </div>
     </div>
-</div>
-{% endblock %}
+</body>
+
+</html>
