@@ -1,16 +1,22 @@
 from django import forms
 from .models import StudentProfile
 from users.models import User
+from academics.models import Department
 
 class StudentProfileForm(forms.ModelForm):
-    # Include department from User model
-    department = forms.CharField(max_length=100, required=False, help_text="Department")
+    # Include department from User model as a dropdown
+    department = forms.ModelChoiceField(
+        queryset=Department.objects.filter(is_active=True),
+        required=False,
+        empty_label="Select Department",
+        help_text="Your registered academic department"
+    )
     first_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=30, required=False)
 
     class Meta:
         model = StudentProfile
-        fields = ['first_name', 'last_name', 'department', 'batch', 'profile_photo', 'bio', 'cgpa', 'linkedin_url', 'github_url', 'resume', 'cover_letter', 'skills', 'stem_badge', 'aiml_cert']
+        fields = ['first_name', 'last_name', 'department', 'course', 'batch', 'current_semester', 'profile_photo', 'bio', 'cgpa', 'linkedin_url', 'github_url', 'resume', 'cover_letter', 'skills', 'stem_badge', 'aiml_cert']
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 3}),
             'skills': forms.Textarea(attrs={'rows': 3, 'class': 'form-control', 'placeholder': 'Python, Django, Machine Learning...'}),
@@ -24,7 +30,7 @@ class StudentProfileForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         if user:
-            self.fields['department'].initial = user.department
+            self.fields['department'].initial = user.department_fk
             self.fields['first_name'].initial = user.first_name
             self.fields['last_name'].initial = user.last_name
 
@@ -34,7 +40,9 @@ class StudentProfileForm(forms.ModelForm):
             profile.save()
             # Save user fields
             if self.cleaned_data.get('department'):
-                profile.user.department = self.cleaned_data['department']
+                dept = self.cleaned_data['department']
+                profile.user.department_fk = dept
+                profile.user.department = dept.name
             if self.cleaned_data.get('first_name'):
                 profile.user.first_name = self.cleaned_data['first_name']
             if self.cleaned_data.get('last_name'):

@@ -4,7 +4,7 @@ from .views import (
     CustomLoginView, SignUpView, DashboardView, 
     UserApprovalListView, approve_user,
     StudentApprovalListView, approve_student,  # Legacy views
-    FacultyCreateView, FacultyListView
+    FacultyCreateView, FacultyListView, AdminStudentCreateView
 )
 from .password_reset_views import (
     CustomPasswordResetView, CustomPasswordResetDoneView,
@@ -41,6 +41,7 @@ urlpatterns = [
     # Faculty management
     path('faculty/', FacultyListView.as_view(), name='faculty_list'),
     path('faculty/add/', FacultyCreateView.as_view(), name='add_faculty'),
+    path('student/add/', AdminStudentCreateView.as_view(), name='admin_student_create'),
     
     # Super Admin - Admin Management
     path('super-admin/admins/', AdminListView.as_view(), name='admin_list'),

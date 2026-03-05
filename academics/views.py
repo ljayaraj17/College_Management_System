@@ -3,8 +3,9 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
-from .models import Department, Course, Subject, Enrollment, TimeSlot, Timetable
-from users.mixins import AdminRequiredMixin, HODRequiredMixin, FacultyRequiredMixin, StudentRequiredMixin
+from .models import Department, Course, Subject, Enrollment, TimeSlot, Timetable, AcademicAdvisor
+from .forms import AcademicAdvisorForm, CourseForm
+from users.mixins import AdminRequiredMixin, HODRequiredMixin, FacultyRequiredMixin, StudentRequiredMixin, AdminOrHODRequiredMixin
 
 
 # Department Views
@@ -55,12 +56,23 @@ class CourseListView(LoginRequiredMixin, ListView):
 
 class CourseCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     model = Course
-    fields = ['name', 'code', 'department', 'duration_years', 'description', 'is_active']
+    form_class = CourseForm
     template_name = 'academics/course_form.html'
     success_url = reverse_lazy('course_list')
     
     def form_valid(self, form):
         messages.success(self.request, "Course created successfully!")
+        return super().form_valid(form)
+
+
+class CourseUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
+    model = Course
+    form_class = CourseForm
+    template_name = 'academics/course_form.html'
+    success_url = reverse_lazy('course_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Course updated successfully!")
         return super().form_valid(form)
 
 
@@ -189,3 +201,62 @@ class TimeSlotCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     def form_valid(self, form):
         messages.success(self.request, "Time slot created successfully!")
         return super().form_valid(form)
+
+
+# Academic Advisor Views (Faculty Mapping)
+class AcademicAdvisorListView(LoginRequiredMixin, AdminOrHODRequiredMixin, ListView):
+    model = AcademicAdvisor
+    template_name = 'academics/advisor_list.html'
+    context_object_name = 'advisors'
+
+    def get_queryset(self):
+        queryset = AcademicAdvisor.objects.filter(is_active=True).select_related('faculty', 'course', 'department')
+        # HOD can only see advisors in their department
+        dept = self.request.user.departments_headed.first() or self.request.user.department_fk
+        if self.request.user.role == 'HOD' and dept:
+            queryset = queryset.filter(department=dept)
+        return queryset
+
+
+class AcademicAdvisorCreateView(LoginRequiredMixin, AdminOrHODRequiredMixin, CreateView):
+    model = AcademicAdvisor
+    form_class = AcademicAdvisorForm
+    template_name = 'academics/advisor_form.html'
+    success_url = reverse_lazy('advisor_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        dept = self.request.user.departments_headed.first() or self.request.user.department_fk
+        kwargs['department'] = dept
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, "Faculty mapped successfully as Class Advisor!")
+        return super().form_valid(form)
+
+
+class AcademicAdvisorUpdateView(LoginRequiredMixin, AdminOrHODRequiredMixin, UpdateView):
+    model = AcademicAdvisor
+    form_class = AcademicAdvisorForm
+    template_name = 'academics/advisor_form.html'
+    success_url = reverse_lazy('advisor_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        dept = self.request.user.departments_headed.first() or self.request.user.department_fk
+        kwargs['department'] = dept
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, "Mapping updated successfully!")
+        return super().form_valid(form)
+
+
+class AcademicAdvisorDeleteView(LoginRequiredMixin, AdminOrHODRequiredMixin, DeleteView):
+    model = AcademicAdvisor
+    template_name = 'academics/advisor_confirm_delete.html'
+    success_url = reverse_lazy('advisor_list')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "Faculty mapping removed successfully.")
+        return super().delete(request, *args, **kwargs)

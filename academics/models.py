@@ -12,7 +12,7 @@ class Department(models.Model):
         null=True, 
         blank=True,
         related_name='departments_headed',
-        limit_choices_to={'role__in': ['HOD', 'ADMIN', 'SUPER_ADMIN']},
+        limit_choices_to={'role': 'HOD'},
         help_text="Head of Department"
     )
     description = models.TextField(blank=True, help_text="Department description")
@@ -228,3 +228,44 @@ class Timetable(models.Model):
             'room_conflicts': room_conflicts,
             'has_conflicts': faculty_conflicts.exists() or room_conflicts.exists()
         }
+
+
+class AcademicAdvisor(models.Model):
+    """Model to map a faculty member as an advisor for a group of students in a semester"""
+    faculty = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='advised_classes',
+        limit_choices_to={'role': 'FACULTY'},
+        help_text="Faculty member designated as advisor"
+    )
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.CASCADE,
+        related_name='academic_advisors'
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='academic_advisors'
+    )
+    semester = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(16)],
+        help_text="Semester number"
+    )
+    academic_year = models.CharField(max_length=20, help_text="e.g., 2024-2025")
+    section = models.CharField(max_length=10, blank=True, null=True, help_text="Section (optional, e.g., A, B)")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-academic_year', 'semester', 'course']
+        verbose_name = "Academic Advisor"
+        verbose_name_plural = "Academic Advisors"
+        # Only one active advisor per class per semester/year
+        unique_together = [['course', 'semester', 'academic_year', 'section', 'is_active']]
+
+    def __str__(self):
+        section_str = f" - Sec {self.section}" if self.section else ""
+        return f"{self.faculty.get_full_name()} | {self.course.code} Sem {self.semester}{section_str} ({self.academic_year})"

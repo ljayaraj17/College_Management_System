@@ -1,0 +1,214 @@
+{% extends 'layouts/modern_dashboard_base.html' %}
+
+{% block title %}Faculty Dashboard - EduPulse{% endblock %}
+
+{% block header_title %}Faculty Instruction Center{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in space-y-8">
+    <!-- Quick Upload Bar -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <a href="#"
+            class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
+            <div
+                class="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                <span class="material-symbols-outlined text-2xl">how_to_reg</span>
+            </div>
+            <h4 class="text-xs font-black uppercase tracking-tight text-center">Attendance</h4>
+        </a>
+        <a href="#"
+            class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
+            <div
+                class="size-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                <span class="material-symbols-outlined text-2xl">schedule</span>
+            </div>
+            <h4 class="text-xs font-black uppercase tracking-tight text-center">Timetable</h4>
+        </a>
+        <a href="#"
+            class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
+            <div
+                class="size-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all">
+                <span class="material-symbols-outlined text-2xl">assignment</span>
+            </div>
+            <h4 class="text-xs font-black uppercase tracking-tight text-center">Assignments</h4>
+        </a>
+        <a href="#"
+            class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
+            <div
+                class="size-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-all">
+                <span class="material-symbols-outlined text-2xl">grade</span>
+            </div>
+            <h4 class="text-xs font-black uppercase tracking-tight text-center">Marks</h4>
+        </a>
+        <a href="#"
+            class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
+            <div
+                class="size-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                <span class="material-symbols-outlined text-2xl">library_books</span>
+            </div>
+            <h4 class="text-xs font-black uppercase tracking-tight text-center">Materials</h4>
+        </a>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Faculty Hero -->
+        <div class="lg:col-span-2 relative overflow-hidden rounded-3xl bg-slate-900 px-8 py-10 text-white shadow-2xl">
+            <div class="absolute right-0 top-0 -mr-20 -mt-20 size-64 rounded-full bg-primary/20 blur-3xl"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="max-w-xl">
+                    <h1 class="text-3xl font-black mb-3">Academic Management Console</h1>
+                    <p class="text-slate-400 text-lg leading-relaxed mb-6">
+                        Digitally manage your classroom content. Upload materials, track student attendance, and monitor
+                        assignment progress using our unified academic suite.
+                    </p>
+                    <div class="flex gap-4">
+                        <button
+                            class="px-6 py-3 bg-primary rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-all">
+                            <span class="material-symbols-outlined">upload_file</span> Bulk Upload
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Mentees Section -->
+        <div
+            class="lg:col-span-2 glass-card rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+            <div
+                class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+                <div class="flex items-center gap-3">
+                    <div class="size-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined">group</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black tracking-tight">My Mentees</h3>
+                        <p class="text-xs text-slate-500">Students assigned to your academic mentorship</p>
+                    </div>
+                </div>
+                <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">{{ total_students }}
+                    Students</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-xs uppercase tracking-widest text-slate-500 bg-slate-50 dark:bg-slate-800/30">
+                            <th class="px-6 py-4 font-bold border-b border-slate-100 dark:border-slate-800">Student</th>
+                            <th class="px-6 py-4 font-bold border-b border-slate-100 dark:border-slate-800">Course & Sem
+                            </th>
+                            <th class="px-6 py-4 font-bold border-b border-slate-100 dark:border-slate-800">CGPA</th>
+                            <th class="px-6 py-4 font-bold border-b border-slate-100 dark:border-slate-800">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                        {% for student in mentees %}
+                        <tr class="group hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-all">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="size-10 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">
+                                        {{ student.first_name|first }}{{ student.last_name|first }}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-sm">{{ student.get_full_name }}</p>
+                                        <p class="text-xs text-slate-500">{{ student.username }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-medium text-slate-600 dark:text-slate-400">
+                                        {{ student.student_profile.course.code|default:"N/A" }}
+                                    </span>
+                                    <span class="text-[10px] uppercase font-bold text-slate-400">Semester {{
+                                        student.student_profile.current_semester }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm font-black text-primary">
+                                {{ student.student_profile.cgpa|default:"0.0" }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {% if student.student_profile %}
+                                <a href="{% url 'student_profile_detail' student.student_profile.pk %}"
+                                    class="p-2 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined text-lg">visibility</span>
+                                </a>
+                                {% else %}
+                                <button disabled class="p-2 text-slate-300 cursor-not-allowed">
+                                    <span class="material-symbols-outlined text-lg">visibility</span>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center gap-2 text-slate-400">
+                                    <span class="material-symbols-outlined text-5xl opacity-20">face_6</span>
+                                    <p class="italic text-lg">No mentees assigned to your current mappings.</p>
+                                    {% if not assignments %}
+                                    <p class="text-xs">Please contact your HOD to map you as a class advisor.</p>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Academic Resource Center -->
+        <div
+            class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-black">Performance Management</h3>
+                <span class="material-symbols-outlined text-slate-400">monitoring</span>
+            </div>
+            <p class="text-sm text-slate-500">Record and review student internal assessment marks and laboratory
+                evaluation data.</p>
+            <div class="space-y-4">
+                <div
+                    class="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/10 cursor-pointer hover:bg-amber-500/10 transition-all">
+                    <h4 class="font-bold flex items-center justify-between">
+                        Internal Assessment II <span
+                            class="material-symbols-outlined text-amber-500 text-sm">pending</span>
+                    </h4>
+                    <p class="text-xs text-slate-500 mt-1">Due in 2 days for CS-602</p>
+                </div>
+                <div
+                    class="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 cursor-pointer hover:bg-emerald-500/10 transition-all">
+                    <h4 class="font-bold flex items-center justify-between">
+                        Assignment 4 <span
+                            class="material-symbols-outlined text-emerald-500 text-sm">check_circle</span>
+                    </h4>
+                    <p class="text-xs text-slate-500 mt-1">Grading complete for CS-601</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Tracking Sneak Peek -->
+        <div
+            class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-black">Digital Attendance</h3>
+                <span class="material-symbols-outlined text-slate-400">verified_user</span>
+            </div>
+            <p class="text-sm text-slate-500">Maintain daily records. Supports manual entry and bulk upload from
+                Excel/PDF documents.</p>
+            <div class="grid grid-cols-2 gap-3 mt-4">
+                <button
+                    class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 text-center flex flex-col items-center gap-3">
+                    <span class="material-symbols-outlined text-slate-400">table_chart</span>
+                    <h4 class="text-xs font-bold uppercase tracking-tight">Excel Upload</h4>
+                </button>
+                <button
+                    class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 text-center flex flex-col items-center gap-3">
+                    <span class="material-symbols-outlined text-slate-400">picture_as_pdf</span>
+                    <h4 class="text-xs font-bold uppercase tracking-tight">PDF Report</h4>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -5,7 +5,11 @@ from .views import (
     InternshipListView,
     InternshipDetailView,
     ApplicationListView,
-    apply_job
+    apply_job,
+    InitiateEvaluationView,
+    TakeEvaluationView, 
+    EvaluationDetailView,
+    SubjectEvaluationListView
 )
 from .certificate_views import (
     CertificateCreateView,
@@ -15,6 +19,7 @@ from .certificate_views import (
 
 urlpatterns = [
     path('profile/', StudentProfileView.as_view(), name='student_profile'),
+    path('profile/<int:pk>/', StudentProfileView.as_view(), name='student_profile_detail'),
     path('profile/edit/', StudentProfileUpdateView.as_view(), name='student_profile_edit'),
     
     path('internships/', InternshipListView.as_view(), name='internship_list'),
@@ -27,4 +32,10 @@ urlpatterns = [
     path('certificates/', CertificateListView.as_view(), name='certificate_list'),
     path('certificates/add/', CertificateCreateView.as_view(), name='add_badge'),
     path('certificates/<int:pk>/delete/', CertificateDeleteView.as_view(), name='certificate_delete'),
+
+    # AI Evaluation
+    path('evaluations/', SubjectEvaluationListView.as_view(), name='evaluation_list'),
+    path('evaluations/initiate/', InitiateEvaluationView.as_view(), name='initiate_evaluation'),
+    path('evaluations/take/', TakeEvaluationView.as_view(), name='take_evaluation'),
+    path('evaluations/result/<int:pk>/', EvaluationDetailView.as_view(), name='evaluation_detail'),
 ]

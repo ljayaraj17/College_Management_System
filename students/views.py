@@ -4,20 +4,167 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils import timezone
-from .models import StudentProfile
+from .models import StudentProfile, SubjectEvaluation
 from .forms import StudentProfileForm
+from .evaluation_utils import get_ai_generated_questions, generate_ai_feedback, generate_ai_recommendations
+from academics.models import Subject, Course, Department
 from placements.models import JobPosting, Application
+from django.views import View
+import json
+
 
 class StudentRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_authenticated and self.request.user.is_student
 
-class StudentProfileView(LoginRequiredMixin, StudentRequiredMixin, DetailView):
+
+class SubjectEvaluationListView(LoginRequiredMixin, StudentRequiredMixin, ListView):
+    model = SubjectEvaluation
+    template_name = 'students/evaluation_list.html'
+    context_object_name = 'evaluations'
+
+    def get_queryset(self):
+        return SubjectEvaluation.objects.filter(student=self.request.user)
+
+
+class InitiateEvaluationView(LoginRequiredMixin, StudentRequiredMixin, View):
+    def get(self, request):
+        # We can pre-filter based on student's current enrollment
+        profile = request.user.student_profile
+        subjects = Subject.objects.filter(course=profile.course, semester=profile.current_semester, is_active=True)
+        return render(request, 'students/initiate_evaluation.html', {
+            'subjects': subjects,
+            'profile': profile
+        })
+
+    def post(self, request):
+        subject_id = request.POST.get('subject')
+        subject = get_object_or_404(Subject, id=subject_id)
+        
+        # Simulate AI generating questions
+        questions = get_ai_generated_questions(subject.name, subject.semester)
+        
+        # Store questions in session for the test duration
+        request.session['current_test'] = {
+            'subject_id': subject.id,
+            'questions': questions,
+            'start_time': timezone.now().isoformat()
+        }
+        
+        return redirect('take_evaluation')
+
+
+class TakeEvaluationView(LoginRequiredMixin, StudentRequiredMixin, View):
+    def get(self, request):
+        test_data = request.session.get('current_test')
+        if not test_data:
+            messages.error(request, "No active test found. Please select a subject.")
+            return redirect('initiate_evaluation')
+            
+        subject = get_object_or_404(Subject, id=test_data['subject_id'])
+        return render(request, 'students/take_evaluation.html', {
+            'subject': subject,
+            'questions': test_data['questions']
+        })
+
+    def post(self, request):
+        test_data = request.session.get('current_test')
+        if not test_data:
+            return redirect('initiate_evaluation')
+            
+        subject = get_object_or_404(Subject, id=test_data['subject_id'])
+        questions = test_data['questions']
+        
+        correct_count = 0
+        responses = []
+        
+        for idx, q in enumerate(questions):
+            ans = request.POST.get(f'q_{idx}')
+            is_correct = ans == q['correct']
+            if is_correct:
+                correct_count += 1
+            
+            responses.append({
+                'question': q['question'],
+                'user_answer': ans,
+                'correct_answer': q['correct'],
+                'is_correct': is_correct,
+                'explanation': q['explanation']
+            })
+            
+        total = len(questions)
+        score_percent = (correct_count / total) * 100 if total > 0 else 0
+        
+        # AI Logic: Feedback and Recommendations
+        ai_feedback = generate_ai_feedback(score_percent, subject.name)
+        ai_recommendations = generate_ai_recommendations(score_percent, subject.name)
+        
+        # Save to database
+        evaluation = SubjectEvaluation.objects.create(
+            student=request.user,
+            subject=subject,
+            course=subject.course,
+            semester=subject.semester,
+            score=score_percent,
+            total_questions=total,
+            correct_answers=correct_count,
+            ai_feedback=ai_feedback,
+            ai_recommendations=ai_recommendations,
+            test_details={'responses': responses}
+        )
+        
+        # Clear session
+        del request.session['current_test']
+        
+        return redirect('evaluation_detail', pk=evaluation.id)
+
+
+class EvaluationDetailView(LoginRequiredMixin, View):
+    """View result and AI feedback. Accessible by student, faculty, and HOD."""
+    def get(self, request, pk):
+        evaluation = get_object_or_404(SubjectEvaluation, pk=pk)
+        
+        # Permissions: Student can see their own. Faculty and HOD can see their mentees.
+        can_view = False
+        if request.user == evaluation.student:
+            can_view = True
+        elif request.user.role in ['FACULTY', 'HOD']:
+            # For simplicity, check department match (could be more strict with advisor mapping)
+            if request.user.department_fk == evaluation.student.department_fk:
+                can_view = True
+        
+        if not can_view:
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied
+            
+        return render(request, 'students/evaluation_result.html', {
+            'evaluation': evaluation,
+            'details': evaluation.test_details.get('responses', [])
+        })
+
+
+class StudentProfileView(LoginRequiredMixin, DetailView):
     model = StudentProfile
     template_name = 'students/profile.html'
     context_object_name = 'profile'
 
-    def get_object(self):
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get('pk')
+        if pk:
+            profile = get_object_or_404(StudentProfile, pk=pk)
+            user = self.request.user
+            
+            # Authorization logic
+            if user.role == 'STUDENT' and user.student_profile != profile:
+                from django.core.exceptions import PermissionDenied
+                raise PermissionDenied
+            
+            if user.role in ['FACULTY', 'HOD']:
+                if user.department_fk != profile.user.department_fk:
+                    from django.core.exceptions import PermissionDenied
+                    raise PermissionDenied
+            return profile
+            
         return self.request.user.student_profile
 
 class StudentProfileUpdateView(LoginRequiredMixin, StudentRequiredMixin, UpdateView):

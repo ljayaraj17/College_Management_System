@@ -98,17 +98,13 @@
                         <p class="text-red-500 text-xs font-medium">{{ field.errors.as_text }}</p>
                         {% endif %}
 
-                        {% if field.name == 'role' %}
+                        {% if field.field.choices %}
                         <select name="{{ field.name }}" id="{{ field.id_for_label }}"
                             class="w-full h-12 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white">
                             {% for value, text in field.field.choices %}
                             <option value="{{ value }}" class="bg-background-dark">{{ text }}</option>
                             {% endfor %}
                         </select>
-                        {% elif field.name == 'department' %}
-                        <input type="text" name="{{ field.name }}" id="{{ field.id_for_label }}"
-                            class="w-full h-12 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white"
-                            placeholder="{{ field.label }}" {% if field.value %}value="{{ field.value }}" {% endif %}>
                         {% else %}
                         <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}"
                             id="{{ field.id_for_label }}"

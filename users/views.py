@@ -35,8 +35,34 @@ class SignUpView(CreateView):
     template_name = 'users/signup.html'
     success_url = reverse_lazy('login')
 
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.is_active = False  # Account must be approved by admin
+        user.is_approved = False
+        user.save()
+        messages.success(self.request, "Account created successfully! Please wait for admin approval before logging in.")
+        return redirect(self.success_url)
+
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'users/dashboard.html'
+
+    def get_template_names(self):
+        role = self.request.user.role
+        if role == 'SUPER_ADMIN':
+            return ['users/dashboards/super_admin.html']
+        elif role == 'ADMIN':
+            return ['users/dashboards/admin.html']
+        elif role == 'HOD':
+            return ['users/dashboards/hod.html']
+        elif role == 'FACULTY':
+            return ['users/dashboards/faculty.html']
+        elif role == 'STUDENT':
+            return ['users/dashboards/student.html']
+        elif role == 'PLACEMENT_OFFICER' or role == 'PLACEMENT_CELL':
+            return ['users/dashboards/placement_officer.html']
+        elif role == 'INDUSTRY' or role == 'EMPLOYER':
+            return ['users/dashboards/industry.html']
+        return [self.template_name]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -55,8 +81,20 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             context.update(self.get_hod_context())
         elif user.is_placement_cell or user.is_placement_officer:
             context.update(self.get_placement_context())
+        elif user.is_industry or user.is_employer:
+            context.update(self.get_industry_context())
         
         return context
+    
+    def get_industry_context(self):
+        """Context for industry partner dashboard"""
+        from placements.models import JobPosting, Application
+        
+        return {
+            'active_jobs': JobPosting.objects.filter(company_user=self.request.user, is_active=True).count() if hasattr(JobPosting.objects, 'company_user') else 0,
+            'total_applications': Application.objects.filter(job__company_user=self.request.user).count() if hasattr(JobPosting.objects, 'company_user') else 0,
+            'matched_students': User.objects.filter(role='STUDENT', is_approved=True).count(), # Simplification
+        }
     
     def get_student_context(self):
         """Context for student dashboard"""
@@ -85,17 +123,34 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     
     def get_faculty_context(self):
         """Context for faculty dashboard"""
+        from academics.models import AcademicAdvisor
+        from students.models import StudentProfile
         from placements.models import Application
-        from django.db.models import Count
+        
+        # Get all active assignments/mappings for this faculty
+        assignments = AcademicAdvisor.objects.filter(faculty=self.request.user, is_active=True).select_related('course')
+        
+        # Build query for students based on assignments
+        mentee_profiles = StudentProfile.objects.none()
+        for assignment in assignments:
+            # Match students by course and semester
+            class_mentees = StudentProfile.objects.filter(
+                course=assignment.course,
+                current_semester=assignment.semester
+            )
+            mentee_profiles = mentee_profiles | class_mentees
+            
+        # Get actual User objects for these profiles
+        mentees = User.objects.filter(student_profile__in=mentee_profiles).select_related('student_profile')
         
         return {
             'pending_approvals': Application.objects.filter(
                 faculty_approved=False,
                 status='APPLIED'
             ).count(),
-            'total_students': self.request.user.department_fk.members.filter(
-                role='STUDENT'
-            ).count() if self.request.user.department_fk else 0,
+            'mentees': mentees,
+            'assignments': assignments,
+            'total_students': mentees.count(),
         }
     
     def get_admin_context(self):
@@ -117,17 +172,28 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         """Context for HOD dashboard"""
         from academics.models import Department
         
-        dept = self.request.user.department_fk
+        # Priority 1: Department where the user is explicitly set as HOD
+        dept = self.request.user.departments_headed.first()
+        
+        # Priority 2: Department set on the user's profile
+        if not dept:
+            dept = self.request.user.department_fk
+            
         if not dept:
             return {}
         
         return {
             'department': dept,
-            'faculty_count': dept.members.filter(role='FACULTY').count(),
-            'student_count': dept.members.filter(role='STUDENT').count(),
-            'pending_faculty_approvals': User.objects.filter(
+            'faculty_count': dept.members.filter(role='FACULTY', is_approved=True).count(),
+            'student_count': dept.members.filter(role='STUDENT', is_approved=True).count(),
+            'faculties': dept.members.filter(role='FACULTY').order_by('is_approved', 'last_name'),
+            'students': dept.members.filter(role='STUDENT').order_by('is_approved', 'last_name'),
+            'pending_faculty_approvals': dept.members.filter(
                 role='FACULTY',
-                department_fk=dept,
+                is_approved=False
+            ).count(),
+            'pending_student_approvals': dept.members.filter(
+                role='STUDENT',
                 is_approved=False
             ).count(),
         }
@@ -150,12 +216,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     
     def dispatch(self, request, *args, **kwargs):
         # Check if user is approved
-        if request.user.is_authenticated and not request.user.is_approved and request.user.role != 'STUDENT':
+        if request.user.is_authenticated and not request.user.is_approved and request.user.role not in ['STUDENT', 'SUPER_ADMIN', 'ADMIN']:
             from django.contrib import messages
             messages.warning(request, "Your account is pending approval. Please wait for admin approval.")
         return super().dispatch(request, *args, **kwargs)
 
-class UserApprovalListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
+class UserApprovalListView(LoginRequiredMixin, HODRequiredMixin, ListView):
     """List view for pending user approvals"""
     model = User
     template_name = 'users/user_approval.html'
@@ -173,9 +239,10 @@ class UserApprovalListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
             # Admin can see Students, Placement Officers, Faculty
             return queryset.filter(role__in=['STUDENT', 'PLACEMENT_OFFICER', 'FACULTY'])
         elif user.role == 'HOD':
-            # HOD can only see Faculty in their department
-            if user.department_fk:
-                return queryset.filter(role='FACULTY', department_fk=user.department_fk)
+            # HOD can see Faculty and Students in their department
+            dept = user.departments_headed.first() or user.department_fk
+            if dept:
+                return queryset.filter(role__in=['FACULTY', 'STUDENT'], department_fk=dept)
             return User.objects.none()
         
         return User.objects.none()
@@ -192,9 +259,10 @@ def approve_user(request, pk):
     
     # Check if current user has permission to approve this user
     if request.user.role == 'HOD':
-        # HOD can only approve Faculty in their department
-        if user_to_approve.role != 'FACULTY' or user_to_approve.department_fk != request.user.department_fk:
-            messages.error(request, "You can only approve Faculty members in your department.")
+        # HOD can only approve Faculty/Students in their department
+        dept = request.user.departments_headed.first() or request.user.department_fk
+        if user_to_approve.role not in ['FACULTY', 'STUDENT'] or user_to_approve.department_fk != dept:
+            messages.error(request, "You can only approve members in your department.")
             return redirect('user_approval')
     elif request.user.role == 'ADMIN':
         # Admin can approve Students, Placement Officers, Faculty (but not Admin/HOD)
@@ -232,7 +300,7 @@ def approve_student(request, pk):
     """Legacy function - redirects to new approve_user"""
     return approve_user(request, pk)
 
-class FacultyListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
+class FacultyListView(LoginRequiredMixin, HODRequiredMixin, ListView):
     model = User
     template_name = 'users/faculty_list.html'
     context_object_name = 'faculty_members'
@@ -240,11 +308,12 @@ class FacultyListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     def get_queryset(self):
         queryset = User.objects.filter(role='FACULTY')
         # HOD can only see faculty in their department
-        if self.request.user.role == 'HOD' and self.request.user.department_fk:
-            queryset = queryset.filter(department_fk=self.request.user.department_fk)
+        dept = self.request.user.departments_headed.first() or self.request.user.department_fk
+        if self.request.user.role == 'HOD' and dept:
+            queryset = queryset.filter(department_fk=dept)
         return queryset
 
-class FacultyCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
+class FacultyCreateView(LoginRequiredMixin, HODRequiredMixin, CreateView):
     model = User
     form_class = FacultyCreationForm
     template_name = 'users/faculty_form.html'
@@ -258,3 +327,24 @@ class FacultyCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
         form.instance.approved_at = timezone.now()
         messages.success(self.request, "Faculty member added successfully!")
         return super().form_valid(form)
+
+class AdminStudentCreateView(LoginRequiredMixin, HODRequiredMixin, CreateView):
+    """Admin can create Student accounts directly"""
+    model = User
+    form_class = CustomUserCreationForm
+    template_name = 'users/admin_student_create.html'
+    success_url = reverse_lazy('dashboard')
+    
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        password = self.request.POST.get('password')
+        if password:
+            user.set_password(password)
+        user.role = 'STUDENT'
+        user.is_approved = True
+        user.is_active = True
+        user.approved_by = self.request.user
+        user.approved_at = timezone.now()
+        user.save()
+        messages.success(self.request, f"Student account '{user.username}' created successfully!")
+        return redirect(self.success_url)

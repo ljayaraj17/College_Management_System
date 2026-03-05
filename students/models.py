@@ -17,6 +17,7 @@ class StudentProfile(models.Model):
     admission_date = models.DateField(blank=True, null=True, help_text="Date of admission")
     current_semester = models.IntegerField(default=1, help_text="Current semester (1-8 for UG, 1-4 for PG)")
     academic_year = models.CharField(max_length=20, blank=True, help_text="e.g. 2024-2025")
+    course = models.ForeignKey('academics.Course', on_delete=models.SET_NULL, null=True, blank=True, related_name='student_profiles')
     
     # Contact & Personal Info
     guardian_name = models.CharField(max_length=100, blank=True)
@@ -73,3 +74,33 @@ class Certificate(models.Model):
     
     def __str__(self):
         return f"{self.name} - {self.student.username}"
+
+
+class SubjectEvaluation(models.Model):
+    """Model to store AI-based subject evaluation results for students"""
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='evaluations')
+    subject = models.ForeignKey('academics.Subject', on_delete=models.CASCADE, related_name='evaluations')
+    course = models.ForeignKey('academics.Course', on_delete=models.CASCADE, related_name='evaluations')
+    semester = models.IntegerField()
+    
+    # Results
+    score = models.DecimalField(max_digits=5, decimal_places=2, help_text="Percentage score")
+    total_questions = models.IntegerField()
+    correct_answers = models.IntegerField()
+    
+    # AI Insights
+    ai_feedback = models.TextField(help_text="Suggestions and tips based on performance")
+    ai_recommendations = models.TextField(help_text="Specific learning resources or topics to focus on")
+    
+    # raw test data (optional, for review)
+    test_details = models.JSONField(default=dict, blank=True, help_text="Question-wise student response data")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Subject Evaluation"
+        verbose_name_plural = "Subject Evaluations"
+
+    def __str__(self):
+        return f"{self.student.get_full_name()} - {self.subject.code} ({self.score}%)"

@@ -1,110 +1,251 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/modern_dashboard_base.html' %}
+{% load static %}
 
-{% block title %}Edit Profile - SkillBridge{% endblock %}
+{% block title %}Edit Profile - EduPulse{% endblock %}
+
+{% block header_title %}Update Identity Data{% endblock %}
 
 {% block content %}
-<div class="animate-fade-in" style="max-width: 800px; margin: 0 auto;">
-    <h1 style="margin-bottom: 2rem;">Edit Profile</h1>
-
-    <div class="card glass-card">
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            {% if form.non_field_errors %}
-            <div class="messages" style="margin-bottom: 1rem; color: var(--danger);">
-                {{ form.non_field_errors }}
-            </div>
-            {% endif %}
-
-            <h3 style="margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Basic Info</h3>
-
-            <div style="margin-bottom: 1.5rem;">
-                <label class="form-label">Profile Photo</label>
-                {{ form.profile_photo }}
-                {{ form.profile_photo.errors }}
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                <div class="form-group">
-                    <label class="form-label">First Name</label>
-                    {{ form.first_name }}
-                    {{ form.first_name.errors }}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Last Name</label>
-                    {{ form.last_name }}
-                    {{ form.last_name.errors }}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Department</label>
-                    {{ form.department }}
-                    <small style="color: var(--text-muted);">{{ form.department.help_text }}</small>
-                    {{ form.department.errors }}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Batch</label>
-                    {{ form.batch }}
-                    <small style="color: var(--text-muted);">{{ form.batch.help_text }}</small>
-                    {{ form.batch.errors }}
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Bio</label>
-                {{ form.bio }}
-                {{ form.bio.errors }}
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                <div class="form-group">
-                    <label class="form-label">CGPA</label>
-                    {{ form.cgpa }}
-                    {{ form.cgpa.errors }}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">LinkedIn URL</label>
-                    {{ form.linkedin_url }}
-                    {{ form.linkedin_url.errors }}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">GitHub URL</label>
-                    {{ form.github_url }}
-                    {{ form.github_url.errors }}
-                </div>
-            </div>
-
-            <h3 style="margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Professional</h3>
-            <div class="form-group">
-                <label class="form-label">Skills</label>
-                {{ form.skills }}
-                <small style="color: var(--text-muted);">Comma separated (e.g. Python, Java, Leadership)</small>
-                {{ form.skills.errors }}
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                <div class="form-group">
-                    <label class="form-label">Resume</label>
-                    {{ form.resume }}
-                    {{ form.resume.errors }}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Cover Letter</label>
-                    {{ form.cover_letter }}
-                    {{ form.cover_letter.errors }}
-                </div>
-            </div>
-
-            <h3 style="margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Certifications</h3>
-            <div style="margin-bottom: 1.5rem;">
-                <p class="text-muted">To add new certifications, please use the <a href="{% url 'add_badge' %}">Add Certification</a> page.</p>
-                <p class="text-muted">View all your certificates <a href="{% url 'certificate_list' %}">here</a>.</p>
-            </div>
-
-            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a href="{% url 'student_profile' %}" class="btn btn-outline">Cancel</a>
-            </div>
-        </form>
+<div class="animate-fade-in max-w-4xl mx-auto space-y-8">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-black tracking-tight">Profile Intelligence</h1>
+            <p class="text-slate-500 dark:text-slate-400">Update your data to improve AI matching accuracy</p>
+        </div>
+        <a href="{% url 'student_profile' %}"
+            class="px-4 py-2 text-sm font-bold text-slate-500 hover:text-primary transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">arrow_back</span>
+            Back to View
+        </a>
     </div>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="p-4 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 text-sm font-medium">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <!-- Basic Info Section -->
+        <section class="glass-card p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <h3 class="text-xl font-black flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <span class="material-symbols-outlined text-primary">person</span>
+                Core Identity
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2 col-span-full">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Identity Visual
+                        (Photo)</label>
+                    <div
+                        class="mt-1 flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-dashed border-slate-300 dark:border-slate-700">
+                        <span class="material-symbols-outlined text-3xl text-slate-400">add_a_photo</span>
+                        <div class="flex-1 overflow-hidden">
+                            {{ form.profile_photo }}
+                        </div>
+                    </div>
+                    {% if form.profile_photo.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.profile_photo.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Legal First
+                        Name</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.first_name.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Legal Last
+                        Name</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.last_name.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Academic
+                        Department</label>
+                    {{ form.department }}
+                    <p class="text-[10px] text-slate-400 font-medium italic">{{ form.department.help_text }}</p>
+                    {% if form.department.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.department.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Academic
+                        Course</label>
+                    {{ form.course }}
+                    <p class="text-[10px] text-slate-400 font-medium italic">{{ form.course.help_text }}</p>
+                    {% if form.course.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.course.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Graduation
+                        Batch</label>
+                    {{ form.batch }}
+                    <p class="text-[10px] text-slate-400 font-medium italic">{{ form.batch.help_text }}</p>
+                    {% if form.batch.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.batch.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Current
+                        Semester</label>
+                    {{ form.current_semester }}
+                    <p class="text-[10px] text-slate-400 font-medium italic">{{ form.current_semester.help_text }}</p>
+                    {% if form.current_semester.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.current_semester.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Professional Summary
+                    (Bio)</label>
+                {{ form.bio }}
+                {% if form.bio.errors %}
+                <p class="text-red-500 text-xs font-bold">{{ form.bio.errors.as_text }}</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Professional Matrix Section -->
+        <section class="glass-card p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <h3 class="text-xl font-black flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <span class="material-symbols-outlined text-primary">assessment</span>
+                Performance & Reach
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Current
+                        CGPA</label>
+                    {{ form.cgpa }}
+                    {% if form.cgpa.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.cgpa.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">LinkedIn
+                        Profile</label>
+                    {{ form.linkedin_url }}
+                    {% if form.linkedin_url.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.linkedin_url.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-black uppercase tracking-widest text-slate-500">GitHub
+                        Profile</label>
+                    {{ form.github_url }}
+                    {% if form.github_url.errors %}
+                    <p class="text-red-500 text-xs font-bold">{{ form.github_url.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-sm font-black uppercase tracking-widest text-slate-500">Skills Matrix</label>
+                {{ form.skills }}
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Separate tags with commas (e.g. Python, AI,
+                    React)</p>
+                {% if form.skills.errors %}
+                <p class="text-red-500 text-xs font-bold">{{ form.skills.errors.as_text }}</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Document Hub Section -->
+        <section class="glass-card p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <h3 class="text-xl font-black flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <span class="material-symbols-outlined text-primary">folder_shared</span>
+                Professional Files
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div
+                    class="space-y-3 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800">
+                    <label
+                        class="block text-sm font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">description</span>
+                        Main Resume
+                    </label>
+                    <div class="overflow-hidden">
+                        {{ form.resume }}
+                    </div>
+                </div>
+
+                <div
+                    class="space-y-3 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800">
+                    <label
+                        class="block text-sm font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">history_edu</span>
+                        Cover Letter Template
+                    </label>
+                    {{ form.cover_letter }}
+                </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-primary/5 border border-primary/20">
+                <p class="text-sm font-bold text-primary flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-lg">info</span>
+                    Looking for Certifications?
+                </p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                    Manage your verified skills and academic badges via the
+                    <a href="{% url 'certificate_list' %}"
+                        class="underline font-black hover:text-primary transition-colors">Certificate Hub</a>
+                    or <a href="{% url 'add_badge' %}"
+                        class="underline font-black hover:text-primary transition-colors">Add New Badge</a>.
+                </p>
+            </div>
+        </section>
+
+        <!-- Final Actions -->
+        <div class="flex flex-col md:flex-row items-center gap-4 pt-4">
+            <button type="submit"
+                class="w-full md:w-auto px-10 py-4 bg-primary text-white rounded-2xl font-black text-lg shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined font-black">save</span>
+                Commit Changes
+            </button>
+            <a href="{% url 'student_profile' %}"
+                class="w-full md:w-auto px-8 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl font-bold text-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                Discard Updates
+            </a>
+        </div>
+    </form>
 </div>
+
+<style>
+    /* Styling for Django-rendered inputs */
+    input[type="text"],
+    input[type="url"],
+    input[type="number"],
+    input[type="email"],
+    input[type="date"],
+    textarea,
+    select {
+        @apply w-full h-12 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium;
+    }
+
+    textarea {
+        @apply h-32 py-4;
+    }
+
+    input[type="file"] {
+        @apply text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-all;
+    }
+</style>
 {% endblock %}

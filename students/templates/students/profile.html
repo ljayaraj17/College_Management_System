@@ -1,191 +1,519 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/modern_dashboard_base.html' %}
 {% load static %}
 
-{% block title %}My Profile - SkillBridge{% endblock %}
+{% block title %}My Profile - EduPulse Intelligence{% endblock %}
+
+{% block header_title %}Student Intelligence Profile{% endblock %}
 
 {% block content %}
-<div class="animate-fade-in">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h1>My Profile</h1>
-        <a href="{% url 'student_profile_edit' %}" class="btn btn-primary">Edit Profile</a>
-    </div>
+<!-- Page Background Blobs (Landing Page Style) -->
+<div class="fixed top-0 right-0 -z-10 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="fixed bottom-0 left-0 -z-10 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
 
-    <!-- Personal details -->
-    <div class="card glass-card" style="margin-bottom: 2rem;">
-        <div style="display: flex; gap: 2rem; align-items: start;">
-            <div style="flex-shrink: 0;">
+<div class="animate-fade-in space-y-10">
+    <!-- Profile Hero (Enhanced Landing Page Header Style) -->
+    <div class="relative overflow-hidden rounded-[2rem] bg-slate-900 border border-white/5 shadow-2xl">
+        <!-- Hero Background Image/Overlay -->
+        <div class="absolute inset-0 opacity-40">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10"></div>
+            <img src="https://images.unsplash.com/photo-1523050853063-8802a6acd51c?q=80&w=2070&auto=format&fit=crop"
+                class="w-full h-full object-cover" alt="Campus Background">
+        </div>
+
+        <div class="relative z-20 px-8 py-12 md:px-12 md:py-16 flex flex-col md:flex-row items-center gap-10">
+            <!-- Profile Picture with Glow -->
+            <div class="shrink-0 relative group">
+                <div
+                    class="absolute -inset-1 bg-gradient-to-tr from-primary to-blue-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000">
+                </div>
                 {% if profile.profile_photo %}
                 <img src="{{ profile.profile_photo.url }}" alt="Profile Photo"
-                    style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid var(--border);">
+                    class="relative size-36 md:size-48 object-cover rounded-full border-4 border-white/10 shadow-2xl">
                 {% else %}
                 <div
-                    style="width: 120px; height: 120px; background: var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-muted);">
-                    {{ user.first_name|first }}{{ user.last_name|first }}
+                    class="relative size-36 md:size-48 bg-slate-800 backdrop-blur-md rounded-full border-2 border-white/10 flex items-center justify-center text-4xl font-black md:text-6xl text-white">
+                    {% firstof user.first_name|first user.username|first|upper %}
                 </div>
                 {% endif %}
+                <div class="absolute bottom-2 right-2 size-10 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center shadow-lg"
+                    title="Verified Identity">
+                    <span class="material-symbols-outlined text-white text-xl">verified</span>
+                </div>
             </div>
 
-            <div style="flex-grow: 1;">
-                <h2 style="margin-bottom: 0.5rem;">{{ user.get_full_name|default:user.username }}</h2>
-                <p style="color: var(--secondary); font-weight: 500; margin-bottom: 1rem;">
-                    {{ user.department|default:"Department Not Set" }}
-                    {% if profile.batch %} &bull; {{ profile.batch }}{% endif %}
+            <div class="flex-1 text-center md:text-left">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary-200 text-[10px] font-bold uppercase tracking-widest mb-6">
+                    <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                    Next-Gen Student Profile
+                </div>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tight">
+                    {% firstof user.get_full_name user.username %}
+                </h1>
+                <p class="text-slate-300 text-lg md:text-xl font-medium mb-8 max-w-2xl">
+                    {{ user.department|default:"Academic Track Unset" }}
+                    {% if profile.batch %} <span class="mx-3 opacity-30">|</span> Class of {{ profile.batch }}{% endif %}
                 </p>
 
-                {% if profile.bio %}
-                <p style="color: var(--text-main); margin-bottom: 1.5rem; line-height: 1.6;">{{ profile.bio }}</p>
-                {% endif %}
 
-                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-                    <div>
-                        <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">Email</label>
-                        <span>{{ user.email }}</span>
-                    </div>
-                    {% if profile.cgpa %}
-                    <div>
-                        <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">CGPA</label>
-                        <span style="font-weight: 600;">{{ profile.cgpa }}</span>
-                    </div>
-                    {% endif %}
 
-                    {% if profile.linkedin_url or profile.github_url %}
+
+
+
+                <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                    <a href="{% url 'student_profile_edit' %}"
+                        class="px-8 py-3 bg-primary text-white rounded-xl font-bold hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined">edit_square</span>
+                        Edit Profile
+                    </a>
+                    <div class="flex gap-3">
+                        {% if profile.linkedin_url %}
+                        <a href="{{ profile.linkedin_url }}" target="_blank"
+                            class="size-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl flex items-center justify-center text-white transition-all">
+                            <i class="fab fa-linkedin-in text-xl"></i>
+                        </a>
+                        {% endif %}
+                        {% if profile.github_url %}
+                        <a href="{{ profile.github_url }}" target="_blank"
+                            class="size-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl flex items-center justify-center text-white transition-all">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Stats (Landing Page Counter Style) -->
+            <div class="hidden xl:flex flex-col gap-8">
+                <div
+                    class="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 text-right group hover:bg-white/20 transition-all cursor-default">
+                    <div class="text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">{{
+                        profile.cgpa|default:"0.0" }}</div>
+                    <p class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Academic CGPA</p>
+                </div>
+                <div
+                    class="bg-primary/20 backdrop-blur-md px-6 py-4 rounded-2xl border border-primary/20 text-right group hover:bg-primary/30 transition-all cursor-default">
+                    <div class="text-4xl font-black text-primary-400 mb-1 group-hover:scale-110 transition-transform">{{
+                        user.certificates.all|length|default:"0" }}</div>
+                    <p class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Verified Assets</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Metrics (Landing Page Stats Bar style) -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div
+            class="bg-white dark:bg-background-dark p-6 rounded-3xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
+            <div class="text-2xl font-black text-primary mb-1">128</div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Profile Discovery</p>
+        </div>
+        <div
+            class="bg-white dark:bg-background-dark p-6 rounded-3xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
+            <div class="text-2xl font-black text-emerald-500 mb-1">12</div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Verified Skills</p>
+        </div>
+        <div
+            class="bg-white dark:bg-background-dark p-6 rounded-3xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
+            <div class="text-2xl font-black text-blue-500 mb-1">4</div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Applications</p>
+        </div>
+        <div
+            class="bg-white dark:bg-background-dark p-6 rounded-3xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
+            <div class="text-2xl font-black text-amber-500 mb-1">92%</div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI Readiness</p>
+        </div>
+    </div>
+
+
+    <!-- Main Content Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+        <!-- Sidebar Navigation (Matching Landing Page Experience section style) -->
+        <div class="lg:col-span-4 space-y-6">
+            <div
+                class="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h3 class="text-lg font-black mb-8 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">analytics</span>
+                    Profile Health
+                </h3>
+
+                <div class="space-y-8">
                     <div>
-                        <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">Socials</label>
-                        <div style="display: flex; gap: 0.5rem;">
-                            {% if profile.linkedin_url %}
-                            <a href="{{ profile.linkedin_url }}" target="_blank" style="color: #0077b5;">LinkedIn</a>
-                            {% endif %}
-                            {% if profile.linkedin_url and profile.github_url %} &bull; {% endif %}
-                            {% if profile.github_url %}
-                            <a href="{{ profile.github_url }}" target="_blank" style="color: #333;">GitHub</a>
-                            {% endif %}
+                        <div class="flex justify-between items-end mb-3">
+                            <span class="text-sm font-bold text-slate-500">Completeness</span>
+                            <span class="text-2xl font-black text-primary">85%</span>
+                        </div>
+                        <div class="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-primary to-blue-400 rounded-full"
+                                style="width: 85%"></div>
+                        </div>
+                        <p class="mt-3 text-xs text-slate-400 leading-relaxed">Add a professional bio to reach 100% and
+                            unlock AI career recommendations.</p>
+                    </div>
+
+                    <div class="pt-6 border-t border-slate-100 dark:border-slate-800">
+                        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Quick Stats</h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                                <span class="material-symbols-outlined text-primary">visibility</span>
+                                <div class="flex-1">
+                                    <p class="text-xs font-bold text-slate-500">Profile Views</p>
+                                    <p class="text-sm font-black">128 this month</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                                <span class="material-symbols-outlined text-emerald-500">check_circle</span>
+                                <div class="flex-1">
+                                    <p class="text-xs font-bold text-slate-500">Verified Skills</p>
+                                    <p class="text-sm font-black">12 Skills Verified</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    {% endif %}
+                </div>
+            </div>
+
+            <!-- AI Section (Landing Page Insight style) -->
+            <div
+                class="bg-primary dark:bg-primary p-8 rounded-3xl text-white relative overflow-hidden group shadow-2xl shadow-primary/20">
+                <div
+                    class="absolute right-0 bottom-0 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                    <span class="material-symbols-outlined text-[120px]">psychology</span>
+                </div>
+                <div class="relative z-10">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30 text-white text-[10px] font-bold uppercase tracking-widest mb-4">
+                        <span class="material-symbols-outlined text-sm">bolt</span>
+                        AI Analysis Active
+                    </div>
+                    <h3 class="text-xl font-black mb-3 text-white">Career Intelligence</h3>
+                    <p class="text-white/80 text-sm leading-relaxed mb-6">Our RAG-powered engine has identified a 92%
+                        match for Full-stack Developer roles based on your latest credentials.</p>
+                    <button
+                        class="w-full py-3 bg-white text-primary rounded-xl text-sm font-black uppercase tracking-wider hover:bg-slate-50 transition-all shadow-xl hover:-translate-y-0.5">
+                        Explore Opportunities
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Professional details -->
-    <div class="card" style="margin-bottom: 2rem;">
-        <h2 style="margin-bottom: 1rem;">Professional Assets</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <!-- Main Info Columns -->
+        <div class="lg:col-span-8 space-y-12">
+            <!-- About Section (Innovation Card Style) -->
+            <section
+                class="bg-white dark:bg-background-dark rounded-3xl p-10 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-primary/50 transition-all group">
+                <div
+                    class="w-14 h-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-white transition-all">
+                    <span class="material-symbols-outlined text-3xl">badge</span>
+                </div>
+                <h3 class="text-2xl font-black mb-4">Professional Biography</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                    {{ profile.bio|default:"Introduce yourself to the network. An effective bio highlights your academic
+                    journey, technical proficiencies, and professional goals." }}
+                </p>
 
-            <!-- Resumes & Skills -->
-            <div>
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Resume & Skills</h3>
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Resume</label>
-                    {% if profile.resume %}
-                    <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-outline btn-sm">Download
-                        Resume</a>
-                    {% else %}
-                    <span style="color: var(--text-muted);">No resume uploaded</span>
-                    {% endif %}
+                <div
+                    class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10 pt-10 border-t border-slate-100 dark:border-slate-800">
+                    <div
+                        class="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10 transition-all hover:bg-primary/10">
+                        <div class="size-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-xl">alternate_email</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Institutional
+                                Email</p>
+                            <p class="font-bold text-slate-700 dark:text-slate-200 text-sm">{{ user.email }}</p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10 transition-all hover:bg-primary/10">
+                        <div class="size-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-xl">account_tree</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Academic
+                                Department</p>
+                            <p class="font-bold text-slate-700 dark:text-slate-200 text-sm">{{
+                                user.department|default:"Assignment Pending" }}</p>
+                        </div>
+                    </div>
                 </div>
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Cover Letter</label>
-                    {% if profile.cover_letter %}
-                    <a href="{{ profile.cover_letter.url }}" target="_blank" class="btn btn-outline btn-sm">Download
-                        Cover Letter</a>
-                    {% else %}
-                    <span style="color: var(--text-muted);">No cover letter uploaded</span>
-                    {% endif %}
+            </section>
+
+
+            <!-- Skills Matrix -->
+            <section
+                class="bg-white dark:bg-background-dark rounded-3xl p-10 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden relative">
+                <div class="absolute top-0 right-0 p-8 opacity-5">
+                    <span class="material-symbols-outlined text-[120px]">psychology</span>
                 </div>
-                <div>
-                    <label style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Skills</label>
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl">terminal</span>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-black">Skill Intelligence</h3>
+                            <p class="text-slate-500 text-sm">Automated skill mapping from activity and certifications
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-4 relative z-10">
                     {% if profile.skills %}
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                        {% for skill in profile.skills.splitlines %}
-                        {% if skill|length > 0 %}
-                        <!-- Crude split, refined in view or templatetag usually, assuming comma separated actually -->
-                        {% endif %}
-                        <!-- Just displaying raw text for now if comma separated is ambiguous in storage -->
-                        <p>{{ profile.skills }}</p>
-                        {% endfor %}
+                    {% for skill in profile.skills.splitlines %}
+                    {% if skill.strip %}
+                    <div
+                        class="group px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-primary/50 hover:bg-white dark:hover:bg-slate-800 transition-all duration-300 flex items-center gap-3">
+                        <div
+                            class="size-2 rounded-full bg-primary/40 group-hover:bg-primary group-hover:scale-150 transition-all">
+                        </div>
+                        <span
+                            class="text-sm font-black text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">{{
+                            skill }}</span>
                     </div>
+                    {% endif %}
+                    {% endfor %}
                     {% else %}
-                    <span style="color: var(--text-muted);">No skills added</span>
+                    <div
+                        class="w-full py-16 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
+                        <span
+                            class="material-symbols-outlined text-5xl text-slate-300 mb-4 animate-pulse">clinical_notes</span>
+                        <p class="text-slate-400 font-bold">No recorded skills yet</p>
+                        <p class="text-slate-400 text-sm mt-1">Update your profile to generate intelligence mappings.
+                        </p>
+                    </div>
                     {% endif %}
                 </div>
-            </div>
+            </section>
 
-            <!-- Badges -->
-            <div>
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Verifications</h3>
 
-                <!-- Dynamic Certificates -->
-                {% for cert in profile.user.certificates.all %}
-                <div class="card" style="background: rgba(0,0,0,0.02); margin-bottom: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>{{ cert.name }}</span>
-                        {% if cert.is_verified %}
-                        <span class="badge badge-success"
-                            style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px;">Verified</span>
-                        {% else %}
-                        <span class="badge badge-warning"
-                            style="background-color: #ffc107; color: black; padding: 4px 8px; border-radius: 4px;">Pending</span>
-                        {% endif %}
+            <!-- AI Assessment Results (New Feature) -->
+            <section
+                class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 size-40 bg-primary/5 rounded-full blur-3xl"></div>
+
+                <div class="flex items-center justify-between mb-10 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 bg-indigo-500/10 text-indigo-500 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl">psychology</span>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-black italic tracking-tighter">AI Knowledge Insights</h3>
+                            <p class="text-slate-500 text-sm">Real-time evaluation of subject proficiency</p>
+                        </div>
                     </div>
-                    <small class="text-muted d-block mt-1">{{ cert.issuing_organization }}</small>
-
-                    <div class="mt-2 d-flex gap-2">
-                        <a href="{{ cert.certificate_file.url }}" target="_blank" style="font-size: 0.8rem;">View
-                            Certificate</a>
-                        {% if cert.is_verified and cert.skill_badge %}
-                        <a href="{{ cert.skill_badge.url }}" target="_blank"
-                            style="font-size: 0.8rem; color: #6f42c1;">View Badge</a>
-                        {% elif cert.is_verified %}
-                        <!-- Fallback badge display if no custom image is set but it is verified -->
-                        <span style="font-size: 0.8rem; color: #28a745;"><i class="bi bi-patch-check-fill"></i> Badge
-                            Earned</span>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endfor %}
-
-                <!-- Legacy/Specific Fields (STEM/AIML) -->
-                {% if profile.stem_badge %}
-                <div class="card" style="background: rgba(0,0,0,0.02); margin-bottom: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>STEM Badge</span>
-                        {% if profile.stem_badge_verified %}
-                        <span class="badge badge-success"
-                            style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px;">Verified</span>
-                        {% else %}
-                        <span class="badge badge-warning"
-                            style="background-color: #ffc107; color: black; padding: 4px 8px; border-radius: 4px;">Pending</span>
-                        {% endif %}
-                    </div>
-                    {% if profile.stem_badge %}
-                    <a href="{{ profile.stem_badge.url }}" target="_blank"
-                        style="font-size: 0.8rem; margin-top: 0.5rem; display: block;">View Upload</a>
+                    {% if user == profile.user %}
+                    <a href="{% url 'initiate_evaluation' %}"
+                        class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-600/20 hover:scale-105 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">add_task</span> New Test
+                    </a>
                     {% endif %}
+                </div>
+
+                <div class="space-y-4 relative z-10">
+                    {% for eval in profile.user.evaluations.all|slice:":3" %}
+                    <div
+                        class="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-indigo-400/50 transition-all group">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span
+                                        class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px] font-black text-slate-500">{{
+                                        eval.subject.code }}</span>
+                                    <h4 class="font-black text-slate-800 dark:text-slate-100">{{ eval.subject.name }}
+                                    </h4>
+                                </div>
+                                <p class="text-xs text-slate-500 line-clamp-1 italic">"{{ eval.ai_feedback }}"</p>
+                            </div>
+                            <div class="text-right flex items-center gap-4">
+                                <div>
+                                    <p
+                                        class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">
+                                        Proficiency</p>
+                                    <p class="text-2xl font-black text-indigo-600">{{ eval.score|floatformat:0 }}%</p>
+                                </div>
+                                <a href="{% url 'evaluation_detail' eval.id %}"
+                                    class="size-10 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all">
+                                    <span class="material-symbols-outlined text-lg">analytics</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div
+                        class="py-12 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
+                        <span class="material-symbols-outlined text-5xl text-slate-200 mb-4">clinical_notes</span>
+                        <p class="text-slate-400 font-bold">No evaluation record available</p>
+                        {% if user == profile.user %}
+                        <p class="text-slate-400 text-sm mt-1">Take your first AI test to evaluate your skills.</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if profile.user.evaluations.all|length > 3 %}
+                <div class="mt-8 text-center">
+                    <a href="{% url 'evaluation_list' %}"
+                        class="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-primary transition-colors flex items-center justify-center gap-2">
+                        View Full History <span class="material-symbols-outlined text-sm">arrow_downward</span>
+                    </a>
                 </div>
                 {% endif %}
+            </section>
 
-                {% if profile.aiml_cert %}
-                <div class="card" style="background: rgba(0,0,0,0.02);">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>AI/ML Certificate</span>
-                        {% if profile.aiml_cert_verified %}
-                        <span class="badge badge-success"
-                            style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px;">Verified</span>
-                        {% else %}
-                        <span class="badge badge-warning"
-                            style="background-color: #ffc107; color: black; padding: 4px 8px; border-radius: 4px;">Pending</span>
-                        {% endif %}
+
+            <!-- Credentials Grid -->
+            <section class="space-y-10">
+                <div class="text-center md:text-left">
+                    <h2 class="text-3xl font-black mb-3 flex items-center justify-center md:justify-start gap-3">
+                        <span class="material-symbols-outlined text-primary text-4xl">verified_user</span>
+                        Verified Credentials
+                    </h2>
+                    <p class="text-slate-500 dark:text-slate-400">Institutional records and external certifications
+                        verified by EduPulse AI.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for cert in profile.user.certificates.all %}
+                    <div
+                        class="bg-white dark:bg-background-dark p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm group hover:border-primary transition-all">
+                        <div class="flex justify-between items-start mb-6">
+                            <div
+                                class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                                <span class="material-symbols-outlined">workspace_premium</span>
+                            </div>
+                            {% if cert.is_verified %}
+                            <span
+                                class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-wider border border-emerald-500/20">Verified
+                                Identity</span>
+                            {% else %}
+                            <span
+                                class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-wider border border-amber-500/20">Awaiting
+                                Validation</span>
+                            {% endif %}
+                        </div>
+                        <h4 class="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{{ cert.name }}
+                        </h4>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6 font-medium">{{
+                            cert.issuing_organization }}</p>
+
+                        <div class="flex gap-4">
+                            <a href="{{ cert.certificate_file.url }}" target="_blank"
+                                class="text-xs font-black text-primary hover:text-primary-600 flex items-center gap-2 group/btn">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                                Digital Asset Proof
+                                <span
+                                    class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+                            </a>
+                        </div>
                     </div>
-                    {% if profile.aiml_cert %}
-                    <a href="{{ profile.aiml_cert.url }}" target="_blank"
-                        style="font-size: 0.8rem; margin-top: 0.5rem; display: block;">View Upload</a>
+
+                    {% empty %}
+                    <div
+                        class="col-span-full py-16 text-center bg-slate-50 dark:bg-slate-800/20 border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
+                        <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">military_tech</span>
+                        <p class="text-slate-400 font-medium tracking-tight">Your verified educational credentials will
+                            appear here.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Professional Assets (Landing Page list style) -->
+            <section
+                class="bg-white dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h3 class="text-2xl font-black mb-8 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">folder_special</span>
+                    Resource Repository
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% if profile.resume %}
+                    <a href="{{ profile.resume.url }}" target="_blank"
+                        class="flex items-center gap-5 p-5 rounded-2xl bg-primary/5 hover:bg-primary/10 border border-primary/10 transition-all group">
+                        <div
+                            class="size-14 rounded-full bg-primary/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-primary text-2xl">description</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-800 dark:text-white">Professional Resume</h4>
+                            <p class="text-xs text-slate-500">PDF Documentation</p>
+                        </div>
+                        <span
+                            class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">download</span>
+                    </a>
+                    {% endif %}
+
+                    {% if profile.cover_letter %}
+                    <a href="{{ profile.cover_letter.url }}" target="_blank"
+                        class="flex items-center gap-5 p-5 rounded-2xl bg-primary/5 hover:bg-primary/10 border border-primary/10 transition-all group">
+                        <div
+                            class="size-14 rounded-full bg-primary/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-primary text-2xl">history_edu</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-800 dark:text-white">Standard Cover Letter</h4>
+                            <p class="text-xs text-slate-500">Professional Template</p>
+                        </div>
+                        <span
+                            class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">download</span>
+                    </a>
                     {% endif %}
                 </div>
+                {% if not profile.resume and not profile.cover_letter %}
+                <div class="py-12 text-center text-slate-400 opacity-60">
+                    <p class="font-medium">No repositories available for download.</p>
+                </div>
                 {% endif %}
-
-            </div>
+            </section>
         </div>
     </div>
+
+    <!-- Bottom CTA (Landing Page style) -->
+    <section
+        class="mt-20 py-20 px-10 text-center bg-slate-900 rounded-[3rem] border border-white/5 relative overflow-hidden group">
+        <div
+            class="absolute top-0 right-0 -z-10 w-64 h-64 bg-primary/20 rounded-full blur-[100px] group-hover:scale-110 transition-transform duration-1000">
+        </div>
+        <div class="absolute bottom-0 left-0 -z-10 w-48 h-48 bg-blue-500/10 rounded-full blur-[80px]"></div>
+
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-4xl font-black text-white mb-6">Ready for the Next Step?</h2>
+            <p class="text-slate-400 text-lg mb-10 leading-relaxed">Your profile is 85% complete. Reach 100% to unlock
+                exclusive career opportunities and AI-driven skill matching.</p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="{% url 'student_profile_edit' %}"
+                    class="w-full sm:w-auto px-10 py-4 bg-primary text-white rounded-xl text-lg font-bold shadow-xl shadow-primary/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
+                    Complete Profile <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
+                <a href="{% url 'internship_list' %}"
+                    class="w-full sm:w-auto px-10 py-4 bg-white/5 text-white border border-white/10 rounded-xl text-lg font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+                    View Internships <span class="material-symbols-outlined">work</span>
+                </a>
+            </div>
+        </div>
+    </section>
 </div>
-{% endblock %}
+
+<style>
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fade-in 0.6s ease-out forwards;
+    }
+</style>
+{% endblock content %}

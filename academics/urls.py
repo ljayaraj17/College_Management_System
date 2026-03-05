@@ -1,11 +1,13 @@
 from django.urls import path
 from .views import (
     DepartmentListView, DepartmentCreateView,
-    CourseListView, CourseCreateView,
+    CourseListView, CourseCreateView, CourseUpdateView,
     SubjectListView, SubjectCreateView,
     EnrollmentListView, EnrollmentCreateView,
     TimetableListView, TimetableCreateView,
     TimeSlotListView, TimeSlotCreateView,
+    AcademicAdvisorListView, AcademicAdvisorCreateView,
+    AcademicAdvisorUpdateView, AcademicAdvisorDeleteView,
 )
 
 urlpatterns = [
@@ -16,6 +18,7 @@ urlpatterns = [
     # Courses
     path('courses/', CourseListView.as_view(), name='course_list'),
     path('courses/add/', CourseCreateView.as_view(), name='course_create'),
+    path('courses/<int:pk>/edit/', CourseUpdateView.as_view(), name='course_edit'),
     
     # Subjects
     path('subjects/', SubjectListView.as_view(), name='subject_list'),
@@ -32,5 +35,11 @@ urlpatterns = [
     # Time Slots
     path('timeslots/', TimeSlotListView.as_view(), name='timeslot_list'),
     path('timeslots/add/', TimeSlotCreateView.as_view(), name='timeslot_create'),
+
+    # Academic Advisor / Class Mentor Mapping
+    path('advisor/', AcademicAdvisorListView.as_view(), name='advisor_list'),
+    path('advisor/add/', AcademicAdvisorCreateView.as_view(), name='advisor_create'),
+    path('advisor/<int:pk>/edit/', AcademicAdvisorUpdateView.as_view(), name='advisor_edit'),
+    path('advisor/<int:pk>/delete/', AcademicAdvisorDeleteView.as_view(), name='advisor_delete'),
 ]
 

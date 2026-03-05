@@ -1,0 +1,158 @@
+{% extends 'layouts/modern_dashboard_base.html' %}
+
+{% block title %}Admin Dashboard - EduPulse{% endblock %}
+
+{% block header_title %}Academic Administration{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in space-y-8">
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div
+            class="glass-card p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+            <div
+                class="absolute -right-4 -top-4 size-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all">
+            </div>
+            <div class="relative z-10 flex flex-col gap-4">
+                <div class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-3xl">person_add</span>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-black">User Creation</h3>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Directly add accounts</p>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <a href="{% url 'admin_student_create' %}"
+                        class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                        Add New Student <span class="material-symbols-outlined text-sm">person_add</span>
+                    </a>
+                    <a href="{% url 'add_faculty' %}"
+                        class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                        Add New Faculty <span class="material-symbols-outlined text-sm">person_add_alt</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div
+            class="glass-card p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+            <div
+                class="absolute -right-4 -top-4 size-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-all">
+            </div>
+            <div class="relative z-10 flex flex-col gap-4">
+                <div class="size-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-3xl">school</span>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-black">Academics</h3>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Enrollment & Mapping</p>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <a href="{% url 'enrollment_create' %}"
+                        class="text-xs font-bold text-emerald-500 hover:underline flex items-center gap-1">
+                        Student Enrollment <span class="material-symbols-outlined text-sm">app_registration</span>
+                    </a>
+                    <a href="{% url 'subject_create' %}"
+                        class="text-xs font-bold text-emerald-500 hover:underline flex items-center gap-1">
+                        Faculty-Subject Mapping <span class="material-symbols-outlined text-sm">link</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div
+            class="glass-card p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+            <div
+                class="absolute -right-4 -top-4 size-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-all">
+            </div>
+            <div class="relative z-10 flex flex-col gap-4">
+                <div class="size-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-3xl">campaign</span>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-black">Announcements</h3>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Institution-wide</p>
+                </div>
+                <a href="{% url 'announcement_create' %}"
+                    class="text-xs font-bold text-amber-500 hover:underline flex items-center gap-1">
+                    Publish Alerts <span class="material-symbols-outlined text-sm">add_alert</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Faculty Management -->
+        <div
+            class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-black">Faculty Assignments</h3>
+                <span class="material-symbols-outlined text-slate-400">add_task</span>
+            </div>
+            <div class="space-y-4">
+                <p class="text-sm text-slate-500">Manage subject allocations and monitor faculty workload across all
+                    departments.</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <a href="{% url 'faculty_list' %}"
+                        class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-center hover:bg-primary/10 transition-all group">
+                        <span
+                            class="material-symbols-outlined mb-2 group-hover:text-primary transition-colors">people</span>
+                        <h4 class="text-xs font-bold uppercase transition-colors group-hover:text-primary">Faculty List
+                        </h4>
+                    </a>
+                    <a href="{% url 'enrollment_create' %}"
+                        class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-center hover:bg-primary/10 transition-all group">
+                        <span
+                            class="material-symbols-outlined mb-2 group-hover:text-primary transition-colors">assignment_add</span>
+                        <h4 class="text-xs font-bold uppercase transition-colors group-hover:text-primary">Assign
+                            Subjects</h4>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Data Center -->
+        <div
+            class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-black">Academic Data</h3>
+                <span class="material-symbols-outlined text-slate-400">database</span>
+            </div>
+            <div class="space-y-4">
+                <p class="text-sm text-slate-500">Global control over courses, subjects, timetables, and academic
+                    structures.</p>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{% url 'course_list' %}"
+                        class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all">Course
+                        Catalog</a>
+                    <a href="{% url 'subject_list' %}"
+                        class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all">Subject
+                        Repository</a>
+                    <a href="{% url 'timetable_list' %}"
+                        class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all">Universal
+                        Timetable</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Feed Center -->
+    <div class="p-8 rounded-3xl bg-slate-900 text-white relative overflow-hidden">
+        <div class="absolute right-0 top-0 p-8 opacity-10">
+            <span class="material-symbols-outlined text-9xl">notifications_active</span>
+        </div>
+        <div class="relative z-10 space-y-6">
+            <h3 class="text-2xl font-black">Broadcast Announcements</h3>
+            <p class="text-slate-400 max-w-lg mb-6">Create and publish fee notifications, exam schedules, and
+                institutional alerts to all students and faculty.</p>
+            <div class="flex gap-3">
+                <button class="px-6 py-3 bg-primary rounded-xl font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined">fee</span> Fee Update
+                </button>
+                <button
+                    class="px-6 py-3 bg-white/10 rounded-xl font-bold flex items-center gap-2 border border-white/20">
+                    <span class="material-symbols-outlined">event</span> Exam Schedule
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
