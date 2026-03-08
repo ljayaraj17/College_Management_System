@@ -9,6 +9,9 @@ from .views import (
     AdminApproveRequestView,
     AdminReturnBookView,
     AdminUpdateFineView,
+    BookCreateView,
+    BookUpdateView,
+    BookDeleteView,
 )
 
 app_name = 'library'
@@ -26,4 +29,9 @@ urlpatterns = [
     path('admin/approve/<int:record_id>/', AdminApproveRequestView.as_view(), name='admin_approve_request'),
     path('admin/return/<int:record_id>/', AdminReturnBookView.as_view(), name='admin_return_book'),
     path('admin/fine/<int:pk>/update/', AdminUpdateFineView.as_view(), name='admin_update_fine'),
+    
+    # Book CRUD
+    path('books/add/', BookCreateView.as_view(), name='book_create'),
+    path('books/<int:pk>/edit/', BookUpdateView.as_view(), name='book_update'),
+    path('books/<int:pk>/delete/', BookDeleteView.as_view(), name='book_delete'),
 ]

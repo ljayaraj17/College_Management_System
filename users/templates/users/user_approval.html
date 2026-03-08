@@ -44,8 +44,7 @@
                                     {{ pending_user.username|first|upper }}
                                 </div>
                                 <div>
-                                    <p class="font-bold text-slate-900 dark:text-white">{{
-                                        pending_user.get_full_name|default:pending_user.username }}</p>
+                                    <p class="font-bold text-slate-900 dark:text-white">{{ pending_user.get_full_name|default:pending_user.username }}</p>
                                     <p class="text-xs text-slate-500">{{ pending_user.email }}</p>
                                 </div>
                             </div>

@@ -64,7 +64,7 @@
     <!-- Desktop Sidebar -->
     <aside
         class="fixed top-0 left-0 h-screen w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-40 hidden lg:flex flex-col">
-        <div class="px-6 py-8 border-bottom border-slate-200 dark:border-slate-800">
+        <div class="px-6 py-8 border-b border-slate-200 dark:border-slate-800">
             <a href="{% url 'landing' %}" class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary text-3xl font-bold">school</span>
                 <span class="text-xl font-bold tracking-tight">EduPulse</span>
@@ -152,7 +152,7 @@
             </a>
             <a href="{% url 'faculty_list' %}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'faculty' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
-                <span class="material-symbols-outlined">person_tie</span>
+                <span class="material-symbols-outlined">person</span>
                 <span class="font-bold">Faculty Assignment</span>
             </a>
             <a href="#"
@@ -218,6 +218,22 @@
                 <span class="material-symbols-outlined">query_stats</span>
                 <span class="font-bold">Analytics</span>
             </a>
+            {% elif user.is_librarian %}
+            <a href="{% url 'library:book_list' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'book_list' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
+                <span class="material-symbols-outlined">auto_stories</span>
+                <span class="font-bold">Book Catalog</span>
+            </a>
+            <a href="{% url 'library:admin_dashboard' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'admin_dashboard' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
+                <span class="material-symbols-outlined">dashboard_customize</span>
+                <span class="font-bold">Library Admin</span>
+            </a>
+            <a href="{% url 'library:admin_issue_book' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'admin_issue_book' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
+                <span class="material-symbols-outlined">add_circle</span>
+                <span class="font-bold">Issue Book</span>
+            </a>
             {% endif %}
         </nav>
 
@@ -247,10 +263,15 @@
             class="sticky top-0 z-30 bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <button class="lg:hidden text-slate-500">
+                    <button class="lg:hidden text-slate-500 hover:text-primary transition-colors">
                         <span class="material-symbols-outlined">menu</span>
                     </button>
-                    <h2 class="text-xl font-bold tracking-tight">{% block header_title %}Dashboard{% endblock %}</h2>
+                    <!-- Mobile Logo -->
+                    <div class="flex items-center gap-2 lg:hidden">
+                        <span class="material-symbols-outlined text-primary text-2xl font-bold">school</span>
+                        <span class="text-lg font-bold tracking-tight">EduPulse</span>
+                    </div>
+                    <h2 class="text-xl font-bold tracking-tight hidden lg:block">{% block header_title %}Dashboard{% endblock %}</h2>
                 </div>
                 <div class="flex items-center gap-4">
                     <button class="p-2 text-slate-500 hover:text-primary transition-colors">

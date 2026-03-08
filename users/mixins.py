@@ -82,3 +82,14 @@ class AdminOrHODRequiredMixin(UserPassesTestMixin):
             raise PermissionDenied("You must be an Admin, HOD, or Super Admin to access this page.")
         return redirect('login')
 
+
+class LibraryStaffRequiredMixin(UserPassesTestMixin):
+    """Mixin to require Librarian, Admin, or Super Admin role"""
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.role in ['SUPER_ADMIN', 'ADMIN', 'LIBRARIAN']
+    
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            raise PermissionDenied("You must be a Librarian or Admin to access this page.")
+        return redirect('login')
+

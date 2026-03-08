@@ -3,8 +3,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
-from .models import Department, Course, Subject, Enrollment, TimeSlot, Timetable, AcademicAdvisor
-from .forms import AcademicAdvisorForm, CourseForm
+from .models import Department, Course, Subject, Enrollment, TimeSlot, Timetable, AcademicAdvisor, StudyMaterial
+from .forms import AcademicAdvisorForm, CourseForm, StudyMaterialForm
 from users.mixins import AdminRequiredMixin, HODRequiredMixin, FacultyRequiredMixin, StudentRequiredMixin, AdminOrHODRequiredMixin
 
 
@@ -259,4 +259,68 @@ class AcademicAdvisorDeleteView(LoginRequiredMixin, AdminOrHODRequiredMixin, Del
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Faculty mapping removed successfully.")
+        return super().delete(request, *args, **kwargs)
+
+
+# Study Material Views
+class MaterialListView(LoginRequiredMixin, ListView):
+    model = StudyMaterial
+    template_name = 'academics/material_list.html'
+    context_object_name = 'materials'
+    paginate_by = 12
+
+    def get_queryset(self):
+        queryset = StudyMaterial.objects.all().select_related('faculty', 'department', 'course', 'subject')
+        
+        if self.request.user.is_student:
+            from students.models import StudentProfile
+            profile = StudentProfile.objects.filter(user=self.request.user).first()
+            if profile:
+                queryset = queryset.filter(
+                    department=profile.user.department_fk,
+                    course=profile.course,
+                    semester=profile.current_semester
+                )
+        elif self.request.user.is_faculty:
+            # Faculty see their own uploads by default, or all if we want
+            queryset = queryset.filter(faculty=self.request.user)
+            
+        # Optional filters
+        dept_id = self.request.GET.get('department')
+        if dept_id:
+            queryset = queryset.filter(department_id=dept_id)
+            
+        course_id = self.request.GET.get('course')
+        if course_id:
+            queryset = queryset.filter(course_id=course_id)
+            
+        return queryset
+
+class MaterialCreateView(LoginRequiredMixin, FacultyRequiredMixin, CreateView):
+    model = StudyMaterial
+    form_class = StudyMaterialForm
+    template_name = 'academics/material_form.html'
+    success_url = reverse_lazy('material_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['faculty'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.faculty = self.request.user
+        messages.success(self.request, f"Material '{form.instance.title}' uploaded successfully!")
+        return super().form_valid(form)
+
+class MaterialDeleteView(LoginRequiredMixin, FacultyRequiredMixin, DeleteView):
+    model = StudyMaterial
+    template_name = 'academics/material_confirm_delete.html'
+    success_url = reverse_lazy('material_list')
+
+    def get_queryset(self):
+        # Only allow faculty to delete their own uploads
+        return StudyMaterial.objects.filter(faculty=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "Study material deleted successfully.")
         return super().delete(request, *args, **kwargs)

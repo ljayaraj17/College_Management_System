@@ -1,27 +1,30 @@
 import random
 import os
 import json
-from openai import OpenAI
-
-# Initialize OpenAI client
-# It will automatically use OPENAI_API_KEY from environment variables
-
-#client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-client = OpenAI(api_key="ENTER API KEY")
+try:
+    from openai import OpenAI
+    # Initialize OpenAI client
+    # It will automatically use OPENAI_API_KEY from environment variables
+    #client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+except ImportError:
+    client = None
 def get_ai_generated_questions(subject_name, semester, course_name):
     """
     Generate 10 MCQ questions using OpenAI based on subject, semester and course.
     """
     prompt = f"""
-    Generate 10 high-quality Multiple Choice Questions (MCQs) for a college student.
+    Generate exactly 10 HARD/ADVANCED level Multiple Choice Questions (MCQs) for a college student.
     
     Context:
     Subject: {subject_name}
     Semester: {semester}
     Course: {course_name}
     
-    Requirements:
-    - Return exactly 10 questions.
+    Strict Requirements:
+    - You MUST return exactly 10 questions.
+    - Difficulty: ADVANCED. Avoid basic or introductory questions. Focus on complex scenarios, edge cases, and deep theoretical concepts.
+    - Relevance: STICK STRICTLY to the "{subject_name}" topic within the context of "{course_name}".
     - Each question should have exactly 4 options.
     - Provide a clear 'explanation' for the correct answer.
     - The output MUST be a valid JSON array of objects.
@@ -87,6 +90,30 @@ def get_fallback_questions(subject_name):
             {"id": 18, "question": "What is the base of natural logarithms?", "options": ["10", "2", "e", "pi"], "correct": "e", "explanation": "'e' is Euler's number (~2.718)."},
             {"id": 19, "question": "In a right-angled triangle, what is the hypotenuse if sides are 3 and 4?", "options": ["5", "6", "7", "25"], "correct": "5", "explanation": "Pythagorean theorem: 3^2 + 4^2 = 5^2 (9+16=25)."},
             {"id": 20, "question": "What is log10(100)?", "options": ["1", "2", "10", "0"], "correct": "2", "explanation": "10 squared is 100."}
+        ],
+        "Physics": [
+            {"id": 31, "question": "What is the Newton's second law of motion?", "options": ["F=ma", "E=mc^2", "V=IR", "P=IV"], "correct": "F=ma", "explanation": "Force equals mass times acceleration."},
+            {"id": 32, "question": "What is the speed of light in vacuum?", "options": ["3x10^8 m/s", "1.5x10^8 m/s", "3x10^6 m/s", "3x10^9 m/s"], "correct": "3x10^8 m/s", "explanation": "Light travels at approximately 300,000,000 meters per second."},
+            {"id": 33, "question": "Which of these is a scalar quantity?", "options": ["Velocity", "Acceleration", "Force", "Speed"], "correct": "Speed", "explanation": "Speed has magnitude only, while velocity has direction."},
+            {"id": 34, "question": "What is the unit of electric current?", "options": ["Volt", "Ohm", "Ampere", "Watt"], "correct": "Ampere", "explanation": "Amperes (A) measure the flow of electric charge."},
+            {"id": 35, "question": "What is the acceleration due to gravity on Earth?", "options": ["9.8 m/s^2", "8.9 m/s^2", "10.5 m/s^2", "7.5 m/s^2"], "correct": "9.8 m/s^2", "explanation": "Standard gravity is 9.8 meters per second squared."},
+            {"id": 36, "question": "Who discovered Electrons?", "options": ["Rutherford", "J.J. Thomson", "Chadwick", "Bohr"], "correct": "J.J. Thomson", "explanation": "Thomson discovered the electron in 1897."},
+            {"id": 37, "question": "What type of lens is used to correct myopia?", "options": ["Convex", "Concave", "Cylindrical", "Bifocal"], "correct": "Concave", "explanation": "Concave lenses diverge light rays to fix near-sightedness."},
+            {"id": 38, "question": "What is the SI unit of power?", "options": ["Joule", "Watt", "Pascal", "Newton"], "correct": "Watt", "explanation": "One Watt is one Joule per second."},
+            {"id": 39, "question": "Which state of matter has a definite volume but no definite shape?", "options": ["Solid", "Liquid", "Gas", "Plasma"], "correct": "Liquid", "explanation": "Liquids take the shape of their container but maintain volume."},
+            {"id": 40, "question": "What is the primary source of energy for the Earth?", "options": ["Moon", "Geothermal", "Sun", "Wind"], "correct": "Sun", "explanation": "Solar radiation drives most Earth systems."}
+        ],
+        "Chemistry": [
+            {"id": 41, "question": "What is the atomic number of Carbon?", "options": ["6", "12", "14", "8"], "correct": "6", "explanation": "Carbon is the 6th element in the periodic table."},
+            {"id": 42, "question": "What is the chemical formula for table salt?", "options": ["HCl", "NaOH", "NaCl", "KCl"], "correct": "NaCl", "explanation": "Sodium Chloride is the ionic compound NaCl."},
+            {"id": 43, "question": "Which gas is most abundant in Earth's atmosphere?", "options": ["Oxygen", "Carbon Dioxide", "Hydrogen", "Nitrogen"], "correct": "Nitrogen", "explanation": "Nitrogen makes up about 78% of the atmosphere."},
+            {"id": 44, "question": "What is the pH of pure water?", "options": ["0", "7", "14", "5"], "correct": "7", "explanation": "Pure water is neutral with a pH of 7."},
+            {"id": 45, "question": "Which of these is a noble gas?", "options": ["Oxygen", "Fluorine", "Helium", "Nitrogen"], "correct": "Helium", "explanation": "Helium is in Group 18 of the periodic table."},
+            {"id": 46, "question": "Who is considered the father of modern chemistry?", "options": ["Dalton", "Mendeleev", "Lavoisier", "Boyle"], "correct": "Lavoisier", "explanation": "Antoine Lavoisier helped establish the law of conservation of mass."},
+            {"id": 47, "question": "What is the process of a solid turning directly into a gas?", "options": ["Evaporation", "Melting", "Sublimation", "Condensation"], "correct": "Sublimation", "explanation": "Sublimation bypasses the liquid phase (e.g., dry ice)."},
+            {"id": 48, "question": "What is the hardest natural substance on Earth?", "options": ["Gold", "Iron", "Diamond", "Quartz"], "correct": "Diamond", "explanation": "Diamond has a 10 on the Mohs hardness scale."},
+            {"id": 49, "question": "What is the chemical symbol for Silver?", "options": ["Si", "Ag", "Au", "Sn"], "correct": "Ag", "explanation": "Ag comes from the Latin 'Argentum'."},
+            {"id": 50, "question": "What is the molar mass of water (H2O)?", "options": ["16 g/mol", "18 g/mol", "20 g/mol", "1 g/mol"], "correct": "18 g/mol", "explanation": "2(1) + 16 = 18."}
         ],
         "General": [
              {"id": 101, "question": "What is the primary goal of Agile?", "options": ["Documentation", "Iterative development", "Fixed cost", "Fast coding"], "correct": "Iterative development", "explanation": "Agile promotes iterative delivery and feedback."},

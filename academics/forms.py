@@ -1,5 +1,5 @@
 from django import forms
-from .models import AcademicAdvisor, Course
+from .models import AcademicAdvisor, Course, StudyMaterial, Subject
 from users.models import User
 
 class AcademicAdvisorForm(forms.ModelForm):
@@ -52,3 +52,31 @@ class CourseForm(forms.ModelForm):
                 'rows': 4
             })
 
+
+class StudyMaterialForm(forms.ModelForm):
+    class Meta:
+        model = StudyMaterial
+        fields = ['title', 'description', 'file', 'department', 'course', 'semester', 'subject']
+        widgets = {
+            'department': forms.Select(attrs={'class': 'w-full h-12 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium'}),
+            'course': forms.Select(attrs={'class': 'w-full h-12 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium'}),
+            'semester': forms.NumberInput(attrs={'min': 1, 'max': 16, 'class': 'w-full h-12 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium'}),
+            'subject': forms.Select(attrs={'class': 'w-full h-12 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium'}),
+            'title': forms.TextInput(attrs={'class': 'w-full h-12 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium', 'placeholder': 'Enter material title'}),
+            'description': forms.Textarea(attrs={'class': 'w-full h-32 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl p-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium', 'rows': 4, 'placeholder': 'Optional description...'}),
+            'file': forms.FileInput(attrs={'class': 'w-full py-3 bg-white/5 dark:bg-background-dark border border-dashed border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        faculty = kwargs.pop('faculty', None)
+        super().__init__(*args, **kwargs)
+        if faculty:
+            # Filter subjects to only those taught by this faculty or related to their department
+            self.fields['subject'].queryset = Subject.objects.filter(
+                Q(faculty=faculty) | Q(department=faculty.department_fk)
+            ).distinct()
+            
+            # If the material is being edited, we keep the original faculty's material
+            # No changes needed here for now.
+
+from django.db.models import Q

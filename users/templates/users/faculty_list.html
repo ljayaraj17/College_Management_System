@@ -33,8 +33,7 @@
         </div>
         <div class="glass-card p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
             <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Active Now</p>
-            <h3 class="text-2xl font-black text-emerald-500">{% if faculty_members %}{{ faculty_members|length }}{% else
-                %}0{% endif %}</h3>
+            <h3 class="text-2xl font-black text-emerald-500">{% if faculty_members %}{{ faculty_members|length }}{% else %}0{% endif %}</h3>
         </div>
     </div>
 
@@ -67,8 +66,7 @@
                                     {{ faculty.username|first|upper }}
                                 </div>
                                 <div>
-                                    <p class="font-bold text-slate-900 dark:text-white">{{
-                                        faculty.get_full_name|default:faculty.username }}</p>
+                                    <p class="font-bold text-slate-900 dark:text-white">{{ faculty.get_full_name|default:faculty.username }}</p>
                                     <p class="text-xs text-slate-500">{{ faculty.email }}</p>
                                 </div>
                             </div>

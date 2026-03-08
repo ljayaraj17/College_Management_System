@@ -8,6 +8,7 @@ from .views import (
     TimeSlotListView, TimeSlotCreateView,
     AcademicAdvisorListView, AcademicAdvisorCreateView,
     AcademicAdvisorUpdateView, AcademicAdvisorDeleteView,
+    MaterialListView, MaterialCreateView, MaterialDeleteView,
 )
 
 urlpatterns = [
@@ -41,5 +42,10 @@ urlpatterns = [
     path('advisor/add/', AcademicAdvisorCreateView.as_view(), name='advisor_create'),
     path('advisor/<int:pk>/edit/', AcademicAdvisorUpdateView.as_view(), name='advisor_edit'),
     path('advisor/<int:pk>/delete/', AcademicAdvisorDeleteView.as_view(), name='advisor_delete'),
+
+    # Study Materials
+    path('materials/', MaterialListView.as_view(), name='material_list'),
+    path('materials/add/', MaterialCreateView.as_view(), name='material_create'),
+    path('materials/<int:pk>/delete/', MaterialDeleteView.as_view(), name='material_delete'),
 ]
 

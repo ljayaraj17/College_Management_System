@@ -3,11 +3,13 @@ import os
 from django.shortcuts import render
 from django.views.generic import TemplateView, View
 from django.http import JsonResponse
-from openai import OpenAI
 from django.conf import settings
-
-# Initialize OpenAI client
-client = OpenAI(api_key="ENTER API KEY HERE")
+try:
+    from openai import OpenAI
+    # Initialize OpenAI client
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+except ImportError:
+    client = None
 
 class LandingPageView(TemplateView):
     template_name = 'core/landing.html'

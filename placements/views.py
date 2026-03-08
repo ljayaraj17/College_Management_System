@@ -109,9 +109,15 @@ class StudentDetailView(LoginRequiredMixin, PlacementRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         user = self.object
         # Get profiles if exists
-        context['profile'] = getattr(user, 'student_profile', None)
+        profile = getattr(user, 'student_profile', None)
+        context['profile'] = profile
         # Get certificates
         context['certificates'] = Certificate.objects.filter(student=user)
+        
+        # Process skills into a list for the template
+        if profile and profile.skills:
+            context['skills_list'] = [s.strip() for s in profile.skills.split(',') if s.strip()]
+            
         return context
 
 class VerifyCertificateView(LoginRequiredMixin, PlacementRequiredMixin, View):

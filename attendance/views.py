@@ -92,7 +92,10 @@ class MarkAttendanceView(LoginRequiredMixin, FacultyRequiredMixin, View):
         messages.success(request, f"Attendance percentages for {subject.name} have been updated directly in student profiles.")
         return redirect('faculty_attendance_subjects')
 
-import openpyxl
+try:
+    import openpyxl
+except ImportError:
+    openpyxl = None
 from django.http import HttpResponse
 
 class DownloadAttendanceTemplateView(LoginRequiredMixin, FacultyRequiredMixin, View):

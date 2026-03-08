@@ -1,4 +1,7 @@
-import openpyxl
+try:
+    import openpyxl
+except ImportError:
+    openpyxl = None
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, View
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin

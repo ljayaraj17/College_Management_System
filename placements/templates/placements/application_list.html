@@ -17,8 +17,7 @@
                     onchange="this.form.submit()">
                     <option value="">All Opportunities</option>
                     {% for job in jobs %}
-                    <option value="{{ job.id }}" {% if request.GET.job_id==job.id|stringformat:"i" %}selected{% endif
-                        %}>{{ job.title }} @ {{ job.company }}</option>
+                    <option value="{{ job.id }}" {% if request.GET.job_id == job.id|stringformat:"i" %}selected{% endif %}>{{ job.title }} @ {{ job.company }}</option>
                     {% endfor %}
                 </select>
             </div>

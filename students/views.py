@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.generic import DetailView, UpdateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy

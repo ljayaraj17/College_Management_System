@@ -269,3 +269,47 @@ class AcademicAdvisor(models.Model):
     def __str__(self):
         section_str = f" - Sec {self.section}" if self.section else ""
         return f"{self.faculty.get_full_name()} | {self.course.code} Sem {self.semester}{section_str} ({self.academic_year})"
+
+
+class StudyMaterial(models.Model):
+    """Model for study materials uploaded by faculty"""
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    file = models.FileField(upload_to='study_materials/')
+    faculty = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='study_materials_uploaded',
+        limit_choices_to={'role': 'FACULTY'}
+    )
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.CASCADE,
+        related_name='study_materials'
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='study_materials'
+    )
+    semester = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(16)],
+        help_text="Target semester"
+    )
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='study_materials'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Study Material"
+        verbose_name_plural = "Study Materials"
+
+    def __str__(self):
+        return f"{self.title} - {self.course.code} (Sem {self.semester})"

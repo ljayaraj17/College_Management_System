@@ -1,87 +1,144 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/modern_dashboard_base.html' %}
 {% load static %}
 
-{% block title %}Placement Analytics - SkillBridge{% endblock %}
+{% block title %}Placement Analytics - EduPulse Pro{% endblock %}
+
+{% block header_title %}Institutional Intelligence Hub{% endblock %}
 
 {% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-    .stat-card {
-        padding: 1.5rem;
-        border-radius: 12px;
-        background: white;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .stat-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--primary);
-        margin: 0.5rem 0;
-    }
-
-    .stat-label {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
     .chart-container {
-        height: 300px;
         position: relative;
+        height: 350px;
+        width: 100%;
+    }
+    
+    @keyframes countUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-count {
+        animation: countUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="animate-fade-in">
-    <div style="margin-bottom: 2rem;">
-        <h1>Placement Analytics</h1>
-        <p style="color: var(--text-muted);">Real-time insights into recruitment and student performance.</p>
-    </div>
-
-    <!-- Key Metrics -->
-    <div
-        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-        <div class="stat-card">
-            <span class="stat-label">Total Students</span>
-            <span class="stat-value">{{ total_students }}</span>
+<div class="animate-fade-in max-w-7xl mx-auto pb-20">
+    <!-- Hero Section -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest mb-4">
+                <span class="material-symbols-outlined text-sm">analytics</span>
+                Executive Intelligence Matrix
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-slate-800 dark:text-white italic">
+                Placement <span class="text-primary">Analytics</span>
+            </h1>
+            <p class="text-slate-500 font-medium mt-2">Real-time recruitment performance telemetry and student success metrics.</p>
         </div>
-        <div class="stat-card">
-            <span class="stat-label">Total Jobs Posted</span>
-            <span class="stat-value">{{ total_postings }}</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">Applications Received</span>
-            <span class="stat-value">{{ total_applications }}</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">Students Placed</span>
-            <span class="stat-value" style="color: var(--secondary);">{{ placed_students }}</span>
+        <div class="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-400">
+            <span class="material-symbols-outlined text-emerald-500 animate-pulse">sensors</span>
+            Live Intelligence Stream
         </div>
     </div>
 
-    <!-- Charts -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
-
-        <!-- Application Distribution -->
-        <div class="card glass-card">
-            <h3 style="margin-bottom: 1.5rem;">Most Popular Jobs</h3>
-            <div class="chart-container">
-                <canvas id="jobsChart"></canvas>
+    <!-- Key Metrics Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <!-- Total Students -->
+        <div class="glass-card p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl group hover:border-primary transition-all duration-500">
+            <div class="flex justify-between items-start mb-6">
+                <div class="size-12 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-500 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                    <span class="material-symbols-outlined">groups</span>
+                </div>
+            </div>
+            <div class="space-y-1">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Talent Pool</h4>
+                <div class="text-4xl font-black italic text-slate-800 dark:text-white animate-count">{{ total_students }}</div>
             </div>
         </div>
 
-        <!-- Status Funnel -->
-        <div class="card glass-card">
-            <h3 style="margin-bottom: 1.5rem;">Application Status</h3>
-            <div class="chart-container" style="display: flex; justify-content: center;">
-                <canvas id="statusChart"></canvas>
+        <!-- Total Jobs -->
+        <div class="glass-card p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl group hover:border-indigo-500 transition-all duration-500">
+            <div class="flex justify-between items-start mb-6">
+                <div class="size-12 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-500 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
+                    <span class="material-symbols-outlined">work</span>
+                </div>
+            </div>
+            <div class="space-y-1">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Deployed Leads</h4>
+                <div class="text-4xl font-black italic text-slate-800 dark:text-white animate-count">{{ total_postings }}</div>
+            </div>
+        </div>
+
+        <!-- Total Applications -->
+        <div class="glass-card p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl group hover:border-amber-500 transition-all duration-500">
+            <div class="flex justify-between items-start mb-6">
+                <div class="size-12 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-500 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all duration-500">
+                    <span class="material-symbols-outlined">description</span>
+                </div>
+            </div>
+            <div class="space-y-1">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Engagement Vol</h4>
+                <div class="text-4xl font-black italic text-slate-800 dark:text-white animate-count">{{ total_applications }}</div>
+            </div>
+        </div>
+
+        <!-- Students Placed -->
+        <div class="glass-card p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl group hover:border-emerald-500 transition-all duration-500">
+            <div class="flex justify-between items-start mb-6">
+                <div class="size-12 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-500 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500">
+                    <span class="material-symbols-outlined">verified</span>
+                </div>
+            </div>
+            <div class="space-y-1">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Success Vectors</h4>
+                <div class="text-4xl font-black italic text-emerald-500 animate-count">{{ placed_students }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visualizations Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <!-- Popularity Analytics -->
+        <div class="glass-card rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden group">
+            <div class="p-10 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
+                <div class="flex items-center gap-4">
+                    <div class="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined">bar_chart</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black italic text-slate-800 dark:text-white">Opportunity Popularity</h3>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Global engagement by posting</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-10">
+                <div class="chart-container">
+                    <canvas id="jobsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Distribution -->
+        <div class="glass-card rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
+            <div class="p-10 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
+                <div class="flex items-center gap-4">
+                    <div class="size-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined">pie_chart</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black italic text-slate-800 dark:text-white">Funnel Status Distribution</h3>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Application lifecycle telemetry</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-10 flex items-center justify-center">
+                <div class="chart-container max-w-sm">
+                    <canvas id="statusChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -89,66 +146,114 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Jobs Chart
+        const isDark = document.documentElement.classList.contains('dark');
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const gridColor = isDark ? '#1e293b' : '#f1f5f9';
+
+        // Global Chart Defaults
+        Chart.defaults.color = textColor;
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.weight = 'bold';
+
+        // Jobs Popularity Chart
         const jobCtx = document.getElementById('jobsChart').getContext('2d');
         new Chart(jobCtx, {
             type: 'bar',
             data: {
                 labels: {{ job_labels| safe }},
-        datasets: [{
-            label: 'Applications',
-            data: {{ job_data| safe }},
-        backgroundColor: 'rgba(59, 130, 246, 0.6)',
-        borderColor: 'rgba(59, 130, 246, 1)',
-        borderWidth: 1,
-        borderRadius: 4
+                datasets: [{
+                    label: 'Applications',
+                    data: {{ job_data| safe }},
+                    backgroundColor: 'rgba(57, 107, 240, 0.8)',
+                    hoverBackgroundColor: 'rgba(57, 107, 240, 1)',
+                    borderRadius: 12,
+                    borderSkipped: false,
+                    barThickness: 32,
                 }]
             },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: { stepSize: 1 }
-            }
-        }
-    }
-        });
-
-    // Status Chart
-    const statusData = {{ status_dist| safe }};
-    const statusLabels = statusData.map(item => item.status);
-    const statusCounts = statusData.map(item => item.count);
-    // Map status codes to readable labels if needed, doing simple for now
-
-    const statusCtx = document.getElementById('statusChart').getContext('2d');
-    new Chart(statusCtx, {
-        type: 'doughnut',
-        data: {
-            labels: statusLabels,
-            datasets: [{
-                data: statusCounts,
-                backgroundColor: [
-                    '#3b82f6', // Applied - Primary
-                    '#8b5cf6', // Screening - Purple
-                    '#eab308', // Interview - Yellow
-                    '#10b981', // Offered - Green
-                    '#ef4444'  // Rejected - Red
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right'
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                        titleColor: isDark ? '#ffffff' : '#1e293b',
+                        bodyColor: isDark ? '#94a3b8' : '#64748b',
+                        padding: 12,
+                        cornerRadius: 12,
+                        borderColor: gridColor,
+                        borderWidth: 1,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        border: { display: false },
+                        ticks: { stepSize: 1, font: { size: 10 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        border: { display: false },
+                        ticks: { font: { size: 10 } }
+                    }
                 }
             }
-        }
-    });
+        });
+
+        // Status Distribution Chart
+        const statusData = {{ status_dist| safe }};
+        const statusLabels = statusData.map(item => item.status);
+        const statusCounts = statusData.map(item => item.count);
+
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusCounts,
+                    backgroundColor: [
+                        '#396bf0', // Primary Blue
+                        '#8b5cf6', // Indigo
+                        '#f59e0b', // Amber
+                        '#10b981', // Emerald
+                        '#f43f5e'  // Rose
+                    ],
+                    borderWidth: 8,
+                    borderColor: isDark ? '#0f172a' : '#ffffff',
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: { size: 10, weight: 'bold' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                        titleColor: isDark ? '#ffffff' : '#1e293b',
+                        bodyColor: isDark ? '#94a3b8' : '#64748b',
+                        padding: 12,
+                        cornerRadius: 12,
+                        borderColor: gridColor,
+                        borderWidth: 1,
+                        displayColors: true
+                    }
+                }
+            }
+        });
     });
 </script>
 {% endblock %}

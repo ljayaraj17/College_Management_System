@@ -6,11 +6,16 @@ from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
-from pypdf import PdfReader
-from openai import OpenAI
-
-# Initialize OpenAI client
-client = OpenAI(api_key="ENTER API KEY HERE")
+try:
+    from pypdf import PdfReader
+except ImportError:
+    PdfReader = None
+try:
+    from openai import OpenAI
+    # Initialize OpenAI client
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+except ImportError:
+    client = None
 
 class PDFChatAssistantView(View):
     def post(self, request):

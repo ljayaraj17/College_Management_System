@@ -106,7 +106,7 @@
                     <h4 class="font-bold mb-1">Class Timetable</h4>
                     <p class="text-xs text-slate-500">View your daily lecture schedule and room allocations.</p>
                 </a>
-                <a href="#"
+                <a href="{% url 'material_list' %}"
                     class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-all group">
                     <div class="flex items-start justify-between mb-4">
                         <div
@@ -155,6 +155,40 @@
                     <p class="text-xs text-slate-500">Practice with our AI interviewer to improve your career readiness.
                     </p>
                 </a>
+            </div>
+
+            <!-- Recent Study Materials -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-black">Recent Materials</h3>
+                    <a href="{% url 'material_list' %}" class="text-xs font-black text-primary uppercase tracking-widest hover:underline">View All</a>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for material in recent_materials %}
+                    <div class="p-5 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/30 transition-all flex flex-col group">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <span class="material-symbols-outlined text-sm">
+                                    {% with ext=material.file.name|lower %}
+                                        {% if '.pdf' in ext %}pdf
+                                        {% elif '.doc' in ext %}description
+                                        {% else %}draft{% endif %}
+                                    {% endwith %}
+                                </span>
+                            </div>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ material.posted_at|date:"M d" }}</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1 line-clamp-1">{{ material.title }}</h4>
+                        <p class="text-[10px] text-slate-500 mb-4 line-clamp-1">by Prof. {{ material.faculty.get_full_name }}</p>
+                        <a href="{{ material.file.url }}" download class="w-full py-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-primary hover:text-white transition-all">Download</a>
+                    </div>
+                    {% empty %}
+                    <div class="col-span-full py-12 text-center glass-card rounded-[2.5rem]">
+                        <span class="material-symbols-outlined text-5xl text-slate-200 mb-4">folder_off</span>
+                        <p class="text-xs text-slate-400 font-medium">No materials shared with your group yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
 
             <!-- AI Search Feature -->

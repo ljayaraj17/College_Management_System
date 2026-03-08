@@ -63,6 +63,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             return ['users/dashboards/placement_officer.html']
         elif role == 'INDUSTRY' or role == 'EMPLOYER':
             return ['users/dashboards/industry.html']
+        elif role == 'LIBRARIAN':
+            return ['users/dashboards/librarian.html']
         return [self.template_name]
 
     def get_context_data(self, **kwargs):
@@ -84,6 +86,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             context.update(self.get_placement_context())
         elif user.is_industry or user.is_employer:
             context.update(self.get_industry_context())
+        elif user.is_librarian:
+            context.update(self.get_librarian_context())
         
         return context
     
@@ -102,6 +106,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         from placements.models import Application, JobPosting
         from interviews.models import InterviewSchedule
         from announcements.models import Announcement
+        from academics.models import StudyMaterial
         from django.utils import timezone
         
         from django.db.models import Q
@@ -145,11 +150,16 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             ).get_profile_completeness() if hasattr(user, 'student_profile') else 0,
             'personal_posts': personal_posts,
             'general_announcements': general_announcements,
+            'recent_materials': StudyMaterial.objects.filter(
+                department=user.department_fk,
+                course=getattr(user, 'student_profile').course,
+                semester=getattr(user, 'student_profile').current_semester
+            ).select_related('faculty', 'subject')[:4] if hasattr(user, 'student_profile') and user.student_profile.course else [],
         }
     
     def get_faculty_context(self):
         """Context for faculty dashboard"""
-        from academics.models import AcademicAdvisor
+        from academics.models import AcademicAdvisor, StudyMaterial
         from students.models import StudentProfile
         from placements.models import Application
         
@@ -200,14 +210,18 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'assigned_semesters': assignments.values_list('semester', flat=True).distinct().order_by('semester'),
             'library_records': BorrowRecord.objects.filter(user=user).order_by('-request_date')[:5],
             'announcements': announcements,
+            'recent_materials': StudyMaterial.objects.filter(faculty=user).select_related('course', 'subject')[:5],
         }
     
     def get_admin_context(self):
         """Context for admin/super admin dashboard"""
-        from academics.models import Department
+        from academics.models import Department, Course
         from placements.models import JobPosting, Application
+        from students.models import StudentProfile
+        from django.db.models import Count, Q
         
-        return {
+        # Basic Stats
+        context = {
             'total_users': User.objects.count(),
             'pending_approvals': User.objects.filter(
                 is_approved=False, is_active=False
@@ -216,6 +230,44 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'active_jobs': JobPosting.objects.filter(is_active=True).count() if JobPosting.objects.exists() else 0,
             'total_applications': Application.objects.count() if Application.objects.exists() else 0,
         }
+
+        # Academic Performance Analytics (Pass/Fail)
+        # Logic: CGPA > 0 is Pass, CGPA == 0 is Fail
+        
+        # 1. Overall Pass/Fail
+        profiles = StudentProfile.objects.all()
+        passed_count = profiles.filter(cgpa__gt=0).count()
+        failed_count = profiles.filter(cgpa=0).count()
+        context['overall_pass_fail'] = [
+            {'status': 'Passed', 'count': passed_count},
+            {'status': 'Failed', 'count': failed_count}
+        ]
+
+        # 2. Department-wise Pass Percentage
+        dept_data = []
+        for dept in Department.objects.filter(is_active=True):
+            total = StudentProfile.objects.filter(course__department=dept).count()
+            if total > 0:
+                passed = StudentProfile.objects.filter(course__department=dept, cgpa__gt=0).count()
+                dept_data.append({
+                    'label': dept.code,
+                    'percentage': round((passed / total) * 100, 1)
+                })
+        context['dept_pass_rates'] = dept_data
+
+        # 3. Course-wise Pass Percentage
+        course_data = []
+        for course in Course.objects.filter(is_active=True):
+            total = StudentProfile.objects.filter(course=course).count()
+            if total > 0:
+                passed = StudentProfile.objects.filter(course=course, cgpa__gt=0).count()
+                course_data.append({
+                    'label': course.code,
+                    'percentage': round((passed / total) * 100, 1)
+                })
+        context['course_pass_rates'] = course_data
+
+        return context
     
     def get_hod_context(self):
         """Context for HOD dashboard"""
@@ -267,6 +319,18 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'upcoming_interviews': Application.objects.filter(
                 status='INTERVIEW'
             ).count(),
+        }
+    
+    def get_librarian_context(self):
+        """Context for librarian dashboard"""
+        from library.models import Book, BorrowRecord
+        
+        return {
+            'total_books': Book.objects.count(),
+            'total_issued': BorrowRecord.objects.filter(status='ISSUED').count(),
+            'total_overdue': BorrowRecord.objects.filter(status='OVERDUE').count(),
+            'pending_requests': BorrowRecord.objects.filter(status='PENDING').count(),
+            'recent_transactions': BorrowRecord.objects.select_related('user', 'book').order_by('-request_date')[:5],
         }
     
     def dispatch(self, request, *args, **kwargs):

@@ -13,6 +13,7 @@ class User(AbstractUser):
         ('PLACEMENT_OFFICER', 'Placement Officer'),
         ('INDUSTRY', 'Industry Supervisor'),
         ('EMPLOYER', 'Employer'),
+        ('LIBRARIAN', 'Librarian'),
     ]
     
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='STUDENT')
@@ -80,6 +81,10 @@ class User(AbstractUser):
     @property
     def is_placement_officer(self):
         return self.role == 'PLACEMENT_OFFICER'
+    
+    @property
+    def is_librarian(self):
+        return self.role == 'LIBRARIAN'
     
     def can_approve_users(self):
         """Check if user can approve other users"""

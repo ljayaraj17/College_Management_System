@@ -4,6 +4,10 @@
 
 {% block header_title %}Academic Administration{% endblock %}
 
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="animate-fade-in space-y-8">
     <!-- Quick Stats -->
@@ -76,6 +80,63 @@
                     Publish Alerts <span class="material-symbols-outlined text-sm">add_alert</span>
                 </a>
             </div>
+        </div>
+    </div>
+
+    <!-- Academic Performance Analytics -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Pass/Fail Overview -->
+        <div class="glass-card p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden group">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="size-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined">pie_chart</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black italic">Pass/Fail Ratio</h3>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Student Success</p>
+                    </div>
+                </div>
+            </div>
+            <div class="h-64 flex items-center justify-center">
+                <canvas id="overallPassChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Department Pass Percentages -->
+        <div class="glass-card p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden group">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined">analytics</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black italic text-slate-800 dark:text-white">Department Performance</h3>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pass Percentage Rate</p>
+                    </div>
+                </div>
+            </div>
+            <div class="h-64">
+                <canvas id="deptPassChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Performance Analytics -->
+    <div class="glass-card p-10 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden group mb-8">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-4">
+                <div class="size-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+                    <span class="material-symbols-outlined">menu_book</span>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black italic text-slate-800 dark:text-white">Course Performance</h3>
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pass Percentage Rate by Program</p>
+                </div>
+            </div>
+        </div>
+        <div class="h-80">
+            <canvas id="coursePassChart"></canvas>
         </div>
     </div>
 
@@ -178,4 +239,129 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isDark = document.documentElement.classList.contains('dark');
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const gridColor = isDark ? '#1e293b' : '#f1f5f9';
+
+        Chart.defaults.color = textColor;
+        Chart.defaults.font.family = "'Lexend', sans-serif";
+        Chart.defaults.font.weight = 'bold';
+
+        // 1. Overall Pass/Fail Doughnut
+        const passData = {{ overall_pass_fail|safe }};
+        const passLabels = passData.map(d => d.status);
+        const passCounts = passData.map(d => d.count);
+
+        new Chart(document.getElementById('overallPassChart'), {
+            type: 'doughnut',
+            data: {
+                labels: passLabels,
+                datasets: [{
+                    data: passCounts,
+                    backgroundColor: ['#10b981', '#f43f5e'], // Emerald for Pass, Rose for Fail
+                    borderWidth: 8,
+                    borderColor: isDark ? '#0f172a' : '#ffffff',
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 20, usePointStyle: true, pointStyle: 'circle', font: { size: 11 } }
+                    }
+                }
+            }
+        });
+
+        // 2. Department Pass Rates Bar
+        const deptLabels = {{ dept_pass_rates|safe }}.map(d => d.label);
+        const deptPercentages = {{ dept_pass_rates|safe }}.map(d => d.percentage);
+
+        new Chart(document.getElementById('deptPassChart'), {
+            type: 'bar',
+            data: {
+                labels: deptLabels,
+                datasets: [{
+                    label: 'Pass Rate (%)',
+                    data: deptPercentages,
+                    backgroundColor: 'rgba(19, 91, 236, 0.8)',
+                    hoverBackgroundColor: 'rgba(19, 91, 236, 1)',
+                    borderRadius: 12,
+                    borderSkipped: false,
+                    barThickness: 32,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => ` ${context.parsed.y}% Pass Rate`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: gridColor },
+                        ticks: { callback: value => value + '%' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 3. Course Pass Rates Bar
+        const courseLabels = {{ course_pass_rates|safe }}.map(d => d.label);
+        const coursePercentages = {{ course_pass_rates|safe }}.map(d => d.percentage);
+
+        new Chart(document.getElementById('coursePassChart'), {
+            type: 'bar',
+            data: {
+                labels: courseLabels,
+                datasets: [{
+                    label: 'Pass Rate (%)',
+                    data: coursePercentages,
+                    backgroundColor: 'rgba(245, 158, 11, 0.8)', // Amber
+                    hoverBackgroundColor: 'rgba(245, 158, 11, 1)',
+                    borderRadius: 12,
+                    borderSkipped: false,
+                    barThickness: 32,
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Horizontal bar for better label readability
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => ` ${context.parsed.x}% Pass Rate`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: gridColor },
+                        ticks: { callback: value => value + '%' }
+                    },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

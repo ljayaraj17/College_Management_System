@@ -40,7 +40,7 @@
             </div>
             <h4 class="text-xs font-black uppercase tracking-tight text-center">Marks</h4>
         </a>
-        <a href="#"
+        <a href="{% url 'material_list' %}"
             class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
             <div
                 class="size-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-all">
@@ -134,8 +134,7 @@
                                     <span class="text-sm font-medium text-slate-600 dark:text-slate-400">
                                         {{ student.student_profile.course.code|default:"N/A" }}
                                     </span>
-                                    <span class="text-[10px] uppercase font-bold text-slate-400">Semester {{
-                                        student.student_profile.current_semester }}</span>
+                                    <span class="text-[10px] uppercase font-bold text-slate-400">Semester {{ student.student_profile.current_semester }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-sm font-black text-primary">
@@ -202,6 +201,38 @@
                     </h4>
                     <p class="text-xs text-slate-500 mt-1">Grading complete for CS-601</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- Recent Study Materials -->
+        <div class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-black">Recent Materials</h3>
+                <a href="{% url 'material_list' %}" class="text-xs font-black text-primary uppercase tracking-widest hover:underline">View All</a>
+            </div>
+            <div class="space-y-4">
+                {% for material in recent_materials %}
+                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 flex items-center justify-between group">
+                    <div class="flex items-center gap-4">
+                        <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                            <span class="material-symbols-outlined text-sm">description</span>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ material.title }}</h4>
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ material.course.code }} - Sem {{ material.semester }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ material.file.url }}" download class="size-8 rounded-lg bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center text-slate-400 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
+                    </a>
+                </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <span class="material-symbols-outlined text-4xl text-slate-200 mb-2">folder_off</span>
+                    <p class="text-xs text-slate-400 font-medium">No materials uploaded yet</p>
+                    <a href="{% url 'material_create' %}" class="text-[10px] text-primary font-bold uppercase mt-2 inline-block">Upload Now</a>
+                </div>
+                {% endfor %}
             </div>
         </div>
 
@@ -298,8 +329,7 @@
                                     <div>
                                         <h4 class="font-black text-slate-800 dark:text-white">{{ record.book.title }}
                                         </h4>
-                                        <p class="text-[10px] font-black text-slate-400 tracking-widest">by {{
-                                            record.book.author }}</p>
+                                        <p class="text-[10px] font-black text-slate-400 tracking-widest">by {{ record.book.author }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -314,9 +344,7 @@
                                 <span
                                     class="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[9px] font-black uppercase tracking-widest rounded-full">Returned</span>
                                 {% else %}
-                                <span
-                                    class="px-3 py-1 bg-slate-500/10 text-slate-500 text-[9px] font-black uppercase tracking-widest rounded-full">{{
-                                    record.get_status_display }}</span>
+                                <span class="px-3 py-1 bg-slate-500/10 text-slate-500 text-[9px] font-black uppercase tracking-widest rounded-full">{{ record.get_status_display }}</span>
                                 {% endif %}
                             </td>
                             <td class="px-8 py-6">

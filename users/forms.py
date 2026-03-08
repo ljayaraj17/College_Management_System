@@ -46,6 +46,7 @@ class CustomUserCreationForm(forms.ModelForm):
                 ('HOD', 'Head of Department'),
                 ('FACULTY', 'Faculty Mentor'),
                 ('STUDENT', 'Student'),
+                ('LIBRARIAN', 'Librarian'),
                 ('PLACEMENT_OFFICER', 'Placement Officer'),
             ]
             self.fields['role'].initial = ''

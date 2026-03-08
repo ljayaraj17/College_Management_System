@@ -1,13 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView, DetailView, View, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, View, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.utils import timezone
 from .models import Book, BorrowRecord, BookCategory, Reservation, Fine
 from django.db.models import Sum, Q, Count
 from django.urls import reverse_lazy
-from users.mixins import AdminRequiredMixin
-from .forms import AdminIssueBookForm, AdminUpdateFineForm
+from users.mixins import LibraryStaffRequiredMixin
+from .forms import AdminIssueBookForm, AdminUpdateFineForm, BookForm
 
 class LibraryBookListView(LoginRequiredMixin, ListView):
     model = Book
@@ -105,7 +105,7 @@ class MyBooksView(LoginRequiredMixin, ListView):
 
 # --- Admin Functionality ---
 
-class AdminLibraryDashboardView(LoginRequiredMixin, AdminRequiredMixin, ListView):
+class AdminLibraryDashboardView(LoginRequiredMixin, LibraryStaffRequiredMixin, ListView):
     model = BorrowRecord
     template_name = 'library/admin_dashboard.html'
     context_object_name = 'records'
@@ -137,7 +137,7 @@ class AdminLibraryDashboardView(LoginRequiredMixin, AdminRequiredMixin, ListView
         context['total_pending_requests'] = BorrowRecord.objects.filter(status='PENDING').count()
         return context
 
-class AdminIssueBookView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
+class AdminIssueBookView(LoginRequiredMixin, LibraryStaffRequiredMixin, CreateView):
     model = BorrowRecord
     form_class = AdminIssueBookForm
     template_name = 'library/admin_issue_form.html'
@@ -168,7 +168,7 @@ class AdminIssueBookView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
             messages.error(self.request, str(e))
             return self.form_invalid(form)
 
-class AdminApproveRequestView(LoginRequiredMixin, AdminRequiredMixin, View):
+class AdminApproveRequestView(LoginRequiredMixin, LibraryStaffRequiredMixin, View):
     def post(self, request, record_id):
         record = get_object_or_404(BorrowRecord, id=record_id, status='PENDING')
         
@@ -187,7 +187,7 @@ class AdminApproveRequestView(LoginRequiredMixin, AdminRequiredMixin, View):
             
         return redirect('library:admin_dashboard')
 
-class AdminReturnBookView(LoginRequiredMixin, AdminRequiredMixin, View):
+class AdminReturnBookView(LoginRequiredMixin, LibraryStaffRequiredMixin, View):
     def post(self, request, record_id):
         record = get_object_or_404(BorrowRecord, id=record_id)
         if record.status in ['ISSUED', 'OVERDUE']:
@@ -209,7 +209,7 @@ class AdminReturnBookView(LoginRequiredMixin, AdminRequiredMixin, View):
             
         return redirect('library:admin_dashboard')
 
-class AdminUpdateFineView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
+class AdminUpdateFineView(LoginRequiredMixin, LibraryStaffRequiredMixin, UpdateView):
     model = Fine
     form_class = AdminUpdateFineForm
     template_name = 'library/admin_fine_form.html'
@@ -218,3 +218,36 @@ class AdminUpdateFineView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Fine information updated successfully.")
         return super().form_valid(form)
+
+# --- Book CRUD ---
+
+class BookCreateView(LoginRequiredMixin, LibraryStaffRequiredMixin, CreateView):
+    model = Book
+    form_class = BookForm
+    template_name = 'library/book_form.html'
+    success_url = reverse_lazy('library:book_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Book '{form.instance.title}' added successfully.")
+        return super().form_valid(form)
+
+class BookUpdateView(LoginRequiredMixin, LibraryStaffRequiredMixin, UpdateView):
+    model = Book
+    form_class = BookForm
+    template_name = 'library/book_form.html'
+    success_url = reverse_lazy('library:book_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Book '{form.instance.title}' updated successfully.")
+        return super().form_valid(form)
+
+class BookDeleteView(LoginRequiredMixin, LibraryStaffRequiredMixin, DeleteView):
+    model = Book
+    template_name = 'library/book_confirm_delete.html'
+    success_url = reverse_lazy('library:book_list')
+
+    def delete(self, request, *args, **kwargs):
+        book = self.get_object()
+        title = book.title
+        messages.success(request, f"Book '{title}' has been removed from the catalog.")
+        return super().delete(request, *args, **kwargs)

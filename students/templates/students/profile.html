@@ -84,14 +84,12 @@
             <div class="hidden xl:flex flex-col gap-8">
                 <div
                     class="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 text-right group hover:bg-white/20 transition-all cursor-default">
-                    <div class="text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">{{
-                        profile.cgpa|default:"0.0" }}</div>
+                    <div class="text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">{{ profile.cgpa|default:"0.0" }}</div>
                     <p class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Academic CGPA</p>
                 </div>
                 <div
                     class="bg-primary/20 backdrop-blur-md px-6 py-4 rounded-2xl border border-primary/20 text-right group hover:bg-primary/30 transition-all cursor-default">
-                    <div class="text-4xl font-black text-primary-400 mb-1 group-hover:scale-110 transition-transform">{{
-                        user.certificates.all|length|default:"0" }}</div>
+                    <div class="text-4xl font-black text-primary-400 mb-1 group-hover:scale-110 transition-transform">{{ user.certificates.all|length|default:"0" }}</div>
                     <p class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Verified Assets</p>
                 </div>
             </div>
@@ -250,8 +248,7 @@
                 </div>
                 <h3 class="text-2xl font-black mb-4">Professional Biography</h3>
                 <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
-                    {{ profile.bio|default:"Introduce yourself to the network. An effective bio highlights your academic
-                    journey, technical proficiencies, and professional goals." }}
+                    {{ profile.bio|default:"Introduce yourself to the network. An effective bio highlights your academic journey, technical proficiencies, and professional goals." }}
                 </p>
 
                 <div
@@ -313,8 +310,7 @@
                             class="size-2 rounded-full bg-primary/40 group-hover:bg-primary group-hover:scale-150 transition-all">
                         </div>
                         <span
-                            class="text-sm font-black text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">{{
-                            skill }}</span>
+                            class="text-sm font-black text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">{{ skill }}</span>
                     </div>
                     {% endif %}
                     {% endfor %}
