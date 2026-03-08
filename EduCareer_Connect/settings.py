@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'placements',
     'interviews',
     'analytics',
+    'library',
 ]
 
 # File Upload Settings
@@ -73,7 +74,7 @@ ROOT_URLCONF = 'EduCareer_Connect.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'attendance' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

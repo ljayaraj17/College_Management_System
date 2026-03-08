@@ -8,7 +8,7 @@ class JobPosting(models.Model):
     department = models.CharField(max_length=100, blank=True)
     competencies = models.CharField(max_length=500, help_text="Comma-separated tags")
     stipend_range = models.CharField(max_length=100)
-    
+    eligibility_criteria = models.TextField(blank=True, help_text="Qualification, CGPA, backlogs etc.")
     posted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField()

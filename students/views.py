@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from django.views.generic import DetailView, UpdateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
@@ -42,7 +43,7 @@ class InitiateEvaluationView(LoginRequiredMixin, StudentRequiredMixin, View):
         subject = get_object_or_404(Subject, id=subject_id)
         
         # Simulate AI generating questions
-        questions = get_ai_generated_questions(subject.name, subject.semester)
+        questions = get_ai_generated_questions(subject.name, subject.semester, subject.course.name)
         
         # Store questions in session for the test duration
         request.session['current_test'] = {
@@ -147,6 +148,41 @@ class StudentProfileView(LoginRequiredMixin, DetailView):
     model = StudentProfile
     template_name = 'students/profile.html'
     context_object_name = 'profile'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.get_object()
+        user = profile.user
+        
+        # Fetch relevant job postings based on department
+        if user.department_fk:
+            # We filter by department name (Char comparison) as JobPosting stores it as CharField
+            relevant_jobs = JobPosting.objects.filter(
+                Q(department__icontains=user.department_fk.name) | Q(department__icontains=user.department_fk.code) | Q(department=""),
+                is_active=True,
+                deadline__gte=timezone.now()
+            ).order_by('-created_at')[:5] # Show top 5 recent jobs
+            context['relevant_jobs'] = relevant_jobs
+            
+        # Add Announcements for Notice Board
+        from announcements.models import Announcement
+        context['personal_posts'] = Announcement.objects.filter(
+            target_individual=user,
+            is_active=True
+        ).order_by('-posted_at')[:5]
+        context['general_announcements'] = Announcement.objects.filter(
+            target_audience__in=['ALL', 'STUDENTS'],
+            is_active=True
+        ).exclude(target_individual=user).order_by('-posted_at')[:5]
+            
+        # Add Library Records
+        from library.models import BorrowRecord, Fine
+        context['library_records'] = BorrowRecord.objects.filter(user=user).order_by('-request_date')[:5]
+        context['active_borrows_count'] = BorrowRecord.objects.filter(user=user, status__in=['ISSUED', 'OVERDUE']).count()
+        context['overdue_count'] = BorrowRecord.objects.filter(user=user, status='OVERDUE').count()
+        context['total_fine'] = Fine.objects.filter(borrow_record__user=user, paid=False).aggregate(total=Sum('amount'))['total'] or 0.00
+            
+        return context
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('pk')

@@ -43,6 +43,12 @@
             </div>
 
             <div class="form-group">
+                <label class="form-label">Eligibility Criteria</label>
+                {{ form.eligibility_criteria }}
+                {{ form.eligibility_criteria.errors }}
+            </div>
+
+            <div class="form-group">
                 <label class="form-label">Key Competencies</label>
                 {{ form.competencies }}
                 <small style="color: var(--text-muted);">Comma separated tags (e.g., Python, Teamwork)</small>

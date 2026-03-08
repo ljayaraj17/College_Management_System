@@ -11,7 +11,25 @@ from students.models import StudentProfile, Certificate
 
 class PlacementRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.is_placement_cell
+        return self.request.user.is_authenticated and (self.request.user.is_placement_cell or self.request.user.is_placement_officer)
+
+class ApplicationListView(LoginRequiredMixin, PlacementRequiredMixin, ListView):
+    model = Application
+    template_name = 'placements/application_list.html'
+    context_object_name = 'applications'
+    ordering = ['-applied_at']
+
+    def get_queryset(self):
+        # Filter by job if provided
+        job_id = self.request.GET.get('job_id')
+        if job_id:
+            return Application.objects.filter(job_id=job_id).order_by('-applied_at')
+        return Application.objects.all().order_by('-applied_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['jobs'] = JobPosting.objects.all()
+        return context
 
 class JobPostingListView(LoginRequiredMixin, PlacementRequiredMixin, ListView):
     model = JobPosting
@@ -102,21 +120,6 @@ class VerifyCertificateView(LoginRequiredMixin, PlacementRequiredMixin, View):
         
         # Mark as verified
         cert.is_verified = True
-        
-        # Generate/Assign Badge
-        # In a real app, this might generate a custom image containing the student's name
-        # For now, we assume a static "verified" badge or just setting the field logic.
-        # If we had a default badge image in static, we could programmatically attach it.
-        # We'll rely on the template to show a "Verified Badge" icon if is_verified is True,
-        # OR we could actually save a file here if needed.
-        # Let's say we just mark it verified. If the model REQUIRES a badge file to show up,
-        # we might need to handle that. 
-        # Looking at students/models.py: skill_badge = models.ImageField(...)
-        
-        # Let's see if we can just set a flag. The requirement says "generate a skill badge".
-        # We'll simulate generation by assigning a placeholder if one doesn't exist.
-        
-        # verify and save
         cert.save()
         
         messages.success(request, f"Certificate '{cert.name}' verified and skill badge generated successfully!")

@@ -52,13 +52,10 @@
                 </h1>
                 <p class="text-slate-300 text-lg md:text-xl font-medium mb-8 max-w-2xl">
                     {{ user.department|default:"Academic Track Unset" }}
-                    {% if profile.batch %} <span class="mx-3 opacity-30">|</span> Class of {{ profile.batch }}{% endif %}
+                    {% if profile.batch %}
+                    <span class="mx-3 opacity-30">|</span> Class of {{ profile.batch }}
+                    {% endif %}
                 </p>
-
-
-
-
-
 
                 <div class="flex flex-wrap justify-center md:justify-start gap-4">
                     <a href="{% url 'student_profile_edit' %}"
@@ -131,6 +128,50 @@
 
         <!-- Sidebar Navigation (Matching Landing Page Experience section style) -->
         <div class="lg:col-span-4 space-y-6">
+            <!-- Personalized Alerts & Announcements (Notice Board) -->
+            <div
+                class="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h3 class="text-xl font-black mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">campaign</span>
+                    Notice Board
+                </h3>
+
+                <div class="space-y-4">
+                    {% if personal_posts %}
+                    {% for post in personal_posts %}
+                    <div class="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 animate-pulse-subtle">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-amber-700 dark:text-amber-400 text-sm">{{ post.title }}</h4>
+                            <span
+                                class="px-2 py-0.5 rounded-full bg-amber-500/10 text-[9px] font-bold text-amber-600 uppercase">Alert</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">{{ post.content }}</p>
+                        <p class="text-[9px] text-slate-400 mt-2">{{ post.posted_at|timesince }} ago</p>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    {% for ann in general_announcements %}
+                    <div
+                        class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-1">{{ ann.title }}</h4>
+                        <p class="text-[11px] text-slate-500 line-clamp-2">{{ ann.content }}</p>
+                        <div class="flex items-center justify-between mt-3">
+                            <span class="text-[9px] text-slate-400">{{ ann.posted_at|date:"M d, Y" }}</span>
+                            <a href="#" class="text-[10px] font-bold text-primary hover:underline">Read More</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    {% if not personal_posts %}
+                    <div class="text-center py-8">
+                        <span class="material-symbols-outlined text-4xl text-slate-200 mb-2">notifications_off</span>
+                        <p class="text-xs text-slate-400 font-medium">No new announcements</p>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
             <div
                 class="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
                 <h3 class="text-lg font-black mb-8 flex items-center gap-3">
@@ -290,6 +331,158 @@
                 </div>
             </section>
 
+            <!-- Library Activity (Relocated to Feature Section) -->
+            <section
+                class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+                <div class="absolute -left-10 -bottom-10 size-40 bg-cyan-500/5 rounded-full blur-3xl"></div>
+
+                <div class="flex items-center justify-between mb-10 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 bg-cyan-500/10 text-cyan-500 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl">local_library</span>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-black italic tracking-tighter">Library Activity</h3>
+                            <p class="text-slate-500 text-sm">Most recent book borrowings and requests</p>
+                        </div>
+                    </div>
+                    {% if user == profile.user %}
+                    <a href="{% url 'library:my_books' %}"
+                        class="text-xs font-black text-cyan-500 uppercase tracking-widest hover:underline">Full
+                        History</a>
+                    {% endif %}
+                </div>
+
+                <!-- Summary Row -->
+                <div class="grid grid-cols-3 gap-4 mb-8 relative z-10">
+                    <div
+                        class="p-4 rounded-2xl bg-cyan-50 dark:bg-slate-800 border border-cyan-100 dark:border-slate-700">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active</p>
+                        <p class="text-xl font-black text-cyan-600">{{ active_borrows_count }}</p>
+                    </div>
+                    <div
+                        class="p-4 rounded-2xl bg-rose-50 dark:bg-slate-800 border border-rose-100 dark:border-slate-700">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Overdue</p>
+                        <p class="text-xl font-black text-rose-500">{{ overdue_count }}</p>
+                    </div>
+                    <div
+                        class="p-4 rounded-2xl bg-amber-50 dark:bg-slate-800 border border-amber-100 dark:border-slate-700">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fines</p>
+                        <p class="text-xl font-black text-amber-600">₹{{ total_fine }}</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 relative z-10">
+                    {% for record in library_records %}
+                    <div
+                        class="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between group transition-all hover:border-cyan-400/50">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="size-12 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 group-hover:text-cyan-500 transition-colors">
+                                <span class="material-symbols-outlined">book</span>
+                            </div>
+                            <div>
+                                <h4
+                                    class="font-black text-slate-800 dark:text-white leading-tight group-hover:text-cyan-500 transition-colors">
+                                    {{ record.book.title
+                                    }}</h4>
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{
+                                    record.book.author }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            {% if record.status == 'ISSUED' %}
+                            <p
+                                class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1 flex items-center justify-end gap-1">
+                                <span class="material-symbols-outlined text-[10px]">schedule</span> Due: {{
+                                record.due_date|date:"M d" }}
+                            </p>
+                            {% elif record.status == 'PENDING' %}
+                            <p
+                                class="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1 flex items-center justify-end gap-1">
+                                <span class="material-symbols-outlined text-[10px]">hourglass_empty</span> Requested
+                            </p>
+                            {% elif record.status == 'RETURNED' %}
+                            <p
+                                class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1 flex items-center justify-end gap-1">
+                                <span class="material-symbols-outlined text-[10px]">check_circle</span> Returned
+                            </p>
+                            {% elif record.status == 'OVERDUE' %}
+                            <p
+                                class="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-1 flex items-center justify-end gap-1">
+                                <span class="material-symbols-outlined text-[10px]">warning</span> OVERDUE
+                            </p>
+                            {% endif %}
+                            <span class="text-[10px] font-bold text-slate-400">{{ record.request_date|date:"d M Y"
+                                }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div
+                        class="py-12 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
+                        <span class="material-symbols-outlined text-5xl text-slate-200 mb-4">auto_stories</span>
+                        <p class="text-slate-400 font-bold">No library activity yet</p>
+                        {% if user == profile.user %}
+                        <a href="{% url 'library:book_list' %}"
+                            class="inline-block mt-4 text-xs font-black text-cyan-500 uppercase tracking-widest hover:underline">Browse
+                            Catalog</a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Departmental Job Postings (New Feature) -->
+            {% if relevant_jobs %}
+            <section
+                class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 size-40 bg-emerald-500/5 rounded-full blur-3xl"></div>
+
+                <div class="flex items-center justify-between mb-10 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl">work_history</span>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-black italic tracking-tighter">Departmental Openings</h3>
+                            <p class="text-slate-500 text-sm">Opportunities tailored to {{
+                                user.department_fk.name|default:"your track" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                    {% for job in relevant_jobs %}
+                    <div
+                        class="group p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-emerald-400/50 transition-all">
+                        <div class="flex flex-col h-full">
+                            <div class="flex justify-between items-start mb-4">
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-[10px] font-black text-emerald-600 uppercase">{{
+                                    job.company }}</span>
+                                <span class="text-[10px] font-bold text-slate-400">{{ job.deadline|timeuntil }}
+                                    left</span>
+                            </div>
+                            <h4
+                                class="font-black text-slate-800 dark:text-slate-100 mb-2 group-hover:text-emerald-500 transition-colors">
+                                {{ job.title }}</h4>
+                            <p class="text-xs text-slate-500 line-clamp-2 mb-6">{{ job.description }}</p>
+                            <div class="mt-auto flex items-center justify-between">
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{
+                                    job.stipend_range|default:"Competitive" }}</span>
+                                <a href="{% url 'internship_detail' job.id %}"
+                                    class="size-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
 
             <!-- AI Assessment Results (New Feature) -->
             <section
@@ -423,6 +616,7 @@
                     {% endfor %}
                 </div>
             </section>
+
 
             <!-- Professional Assets (Landing Page list style) -->
             <section

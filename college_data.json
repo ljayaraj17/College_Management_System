@@ -1,0 +1,509 @@
+{
+    "Sheet1": [
+        {
+            " QN NO": 1.0,
+            "QUESTIONS": "What is the name of the college?",
+            "ANSWER": "Sree Sankara Vidyapeetom College"
+        },
+        {
+            " QN NO": 2.0,
+            "QUESTIONS": " Who is the principal?",
+            "ANSWER": "Dr. S. Joy"
+        },
+        {
+            " QN NO": 3.0,
+            "QUESTIONS": "Who is the vice principal?",
+            "ANSWER": "Mr . Sudhakaran Nayar C"
+        },
+        {
+            " QN NO": 4.0,
+            "QUESTIONS": "When was the college established?",
+            "ANSWER": 1995
+        },
+        {
+            " QN NO": 5.0,
+            "QUESTIONS": "Where is the college located?",
+            "ANSWER": "Nagaroor P.O, Kilimanoor, Pin – 695601"
+        },
+        {
+            " QN NO": 6.0,
+            "QUESTIONS": "Is it a government or private college?",
+            "ANSWER": "It is a private college under Sree Sankara Trust"
+        },
+        {
+            " QN NO": 7.0,
+            "QUESTIONS": "How many courses are offered?",
+            "ANSWER": 10
+        },
+        {
+            " QN NO": 8.0,
+            "QUESTIONS": "What courses are available?\n\n\n\n\n\n\n\n\n",
+            "ANSWER": "B.Sc Computer Science\nB.Com.Computer Application\nB.Com.C0-Operation\nBBA\nBA English\nB.Sc.Phychology\nBSW\nM.Sc.Computer Science\nM.Com Finance&Accounting\nMA English"
+        },
+        {
+            " QN NO": 9.0,
+            "QUESTIONS": "How many departments are there?",
+            "ANSWER": 6
+        },
+        {
+            " QN NO": 10.0,
+            "QUESTIONS": "How many students study in the college?",
+            "ANSWER": 300
+        },
+        {
+            " QN NO": 11.0,
+            "QUESTIONS": " How many teachers work there?",
+            "ANSWER": 40
+        },
+        {
+            " QN NO": 12.0,
+            "QUESTIONS": "What is the college timing?\n\n",
+            "ANSWER": "The college works from 9:45 AM to 3:20 PM\n(Lunch break: 12:45 PM to 1:30 PM)\nWorking days: Monday to Friday"
+        },
+        {
+            " QN NO": 13.0,
+            "QUESTIONS": "Does the college have a library?",
+            "ANSWER": "Yes, it has a well-stocked library."
+        },
+        {
+            " QN NO": 14.0,
+            "QUESTIONS": "Does it have a computer lab?",
+            "ANSWER": "Yes,It has well-equipped laboratories and ICT-enabled classrooms "
+        },
+        {
+            " QN NO": 15.0,
+            "QUESTIONS": "Is there a science laboratory?",
+            "ANSWER": "Yes, the college has well-equipped laboratories."
+        },
+        {
+            " QN NO": 16.0,
+            "QUESTIONS": "Does the college have a playground?",
+            "ANSWER": "Yes, a playground is available."
+        },
+        {
+            " QN NO": 17.0,
+            "QUESTIONS": "Is there a canteen?",
+            "ANSWER": "Yes, a college canteen is available."
+        },
+        {
+            " QN NO": 18.0,
+            "QUESTIONS": "Does the college provide hostel facilities?",
+            "ANSWER": "No"
+        },
+        {
+            " QN NO": 19.0,
+            "QUESTIONS": "Is there a bus facility?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 20.0,
+            "QUESTIONS": "Does the college have a website?",
+            "ANSWER": "Yes. www.ssvcollegenagaroor.com�"
+        },
+        {
+            " QN NO": 21.0,
+            "QUESTIONS": "Is the college affiliated with any university?",
+            "ANSWER": "Yes, it is affiliated to the University of Kerala."
+        },
+        {
+            " QN NO": 22.0,
+            "QUESTIONS": "Does it offer undergraduate courses?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 23.0,
+            "QUESTIONS": "Does it offer postgraduate courses?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 24.0,
+            "QUESTIONS": "Are there diploma courses available?",
+            "ANSWER": "No"
+        },
+        {
+            " QN NO": 25.0,
+            "QUESTIONS": " How long are the courses?",
+            "ANSWER": "Usually UG courses are 3 years and PG courses are 2 years under Kerala University."
+        },
+        {
+            " QN NO": 26.0,
+            "QUESTIONS": "What is the admission process?",
+            "ANSWER": "Admission to the University of Kerala is primarily online via admissions.keralauniversity.ac.in, \nwith UG admissions based on merit (marks) and PG admissions largely through entrance exams \n(MA, MSc, MCom, MBA). Applicants must register, fill in details, pay fees online, and, if selected, report with original documents."
+        },
+        {
+            " QN NO": 27.0,
+            "QUESTIONS": "Eligibility for admission?",
+            "ANSWER": "A pass in Higher Secondary Examination of the state or an Examination accepted by the university and 45% marks in aggregate."
+        },
+        {
+            " QN NO": 28.0,
+            "QUESTIONS": "What is the fee structure?\n\n\n\n\n\n\n",
+            "ANSWER": "The details of Tution fee are :\nB.Sc CS                -18750/-\nB.Com CA            -11250/-\nB.Com Cop          -9000/-\nBBA                      -9000/-\nBA English            -9000/-\nBSW                     -9000/-\nB.Sc phychology  -11250/-"
+        },
+        {
+            " QN NO": 29.0,
+            "QUESTIONS": "Are scholarships available?",
+            "ANSWER": "Yes, scholarships are given to meritorious students."
+        },
+        {
+            " QN NO": 30.0,
+            "QUESTIONS": "Does the college conduct exams every semester?",
+            "ANSWER": "Yes,semester exam under Kerala University."
+        },
+        {
+            " QN NO": 31.0,
+            "QUESTIONS": "Are there extracurricular activities?",
+            "ANSWER": "Yes, club activities, co-curricular activities, extension activities are conducted."
+        },
+        {
+            " QN NO": 32.0,
+            "QUESTIONS": "Does the college have sports teams?",
+            "ANSWER": "Yes, sports events are conducted."
+        },
+        {
+            " QN NO": 33.0,
+            "QUESTIONS": "Are there cultural programs?",
+            "ANSWER": "Yes, through club and co-curricular activities."
+        },
+        {
+            " QN NO": 34.0,
+            "QUESTIONS": "Does the college celebrate Arts day?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 35.0,
+            "QUESTIONS": "Is there a student union?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 36.0,
+            "QUESTIONS": "Does the college provide internships?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 37.0,
+            "QUESTIONS": "Are there placement opportunities?",
+            "ANSWER": "Yes, campus placements are available."
+        },
+        {
+            " QN NO": 38.0,
+            "QUESTIONS": "What is the passing percentage?",
+            "ANSWER": 0.45
+        },
+        {
+            " QN NO": 36.0,
+            "QUESTIONS": "What facilities are available for students?\n\n\n\n\n\n\n\n",
+            "ANSWER": "Eco-friendly campus\nWell-equipped laboratories\nICT-enabled classrooms\nWell-stocked library\nSeminar halls\nPlayground\nCanteen\nScholarships\nNSS & club activities"
+        },
+        {
+            " QN NO": 40.0,
+            "QUESTIONS": "Is there a dress code?",
+            "ANSWER": "Yes, uniform is compulsory (except on Wednesdays)."
+        },
+        {
+            " QN NO": 41.0,
+            "QUESTIONS": "What is the email ID of the college?",
+            "ANSWER": "ssvpcn@gmail.com"
+        },
+        {
+            " QN NO": 42.0,
+            "QUESTIONS": "42. Are classrooms well equipped?",
+            "ANSWER": "Yes, they are ICT-enabled classrooms."
+        },
+        {
+            " QN NO": 43.0,
+            "QUESTIONS": "Does the college have CCTV security?",
+            "ANSWER": "Yes,CCTV connectivity for University Examination and general surveillance."
+        },
+        {
+            " QN NO": 44.0,
+            "QUESTIONS": "Is Wi-Fi available on campus?",
+            "ANSWER": "Yes, Wi-Fi connectivity is available in all blocks."
+        },
+        {
+            " QN NO": 45.0,
+            "QUESTIONS": "Are there separate washrooms for boys and girls?",
+            "ANSWER": "Yes, separate facilities are available. A Women’s Recreation Center is also provided"
+        },
+        {
+            " QN NO": 46.0,
+            "QUESTIONS": "What is the contact number of the college?",
+            "ANSWER": 4702678899
+        },
+        {
+            " QN NO": 47.0,
+            "QUESTIONS": "Are parents allowed to visit the campus?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 48.0,
+            "QUESTIONS": "Does the college organize educational tours?",
+            "ANSWER": "Yes, industrial visits / study tours are conducted."
+        },
+        {
+            " QN NO": 49.0,
+            "QUESTIONS": "What are the college rules?\n\n\n\n\n",
+            "ANSWER": "Uniform is compulsory (except Wednesday).\nStrict discipline must be maintained.\nLibrary rules:\nSign in the register before entering.\nKeep belongings in property rack.\nMaintain silence and discipline."
+        },
+        {
+            " QN NO": 50.0,
+            "QUESTIONS": "Why should students choose this college?\n\n\n\n\n\n\n\n",
+            "ANSWER": "Students should choose this college because it offers:\nQuality teaching with mentoring and monitoring\nUGC-NET oriented coaching\nWell-qualified teachers\nEco-friendly campus\nGood infrastructure\nScholarships\nCampus placements\nStrong academic performance with university ranks"
+        },
+        {
+            " QN NO": 51.0,
+            "QUESTIONS": "Under which trust does the college function?",
+            "ANSWER": "Sree Sankara Trust"
+        },
+        {
+            " QN NO": 52.0,
+            "QUESTIONS": "To which university is the college affiliated?",
+            "ANSWER": "University of Kerala"
+        },
+        {
+            " QN NO": 53.0,
+            "QUESTIONS": "Who was the Founder President and Manager of the college?",
+            "ANSWER": "Late Shri. P.N. Namboothiri"
+        },
+        {
+            " QN NO": 54.0,
+            "QUESTIONS": "Who is the Chairman of the South Zone?",
+            "ANSWER": "Shri. K. Kesavan Potty"
+        },
+        {
+            " QN NO": 55.0,
+            "QUESTIONS": "Who is the Secretary of the South Zone?",
+            "ANSWER": "Shri. V. Harikumar Namboothiri"
+        },
+        {
+            " QN NO": 56.0,
+            "QUESTIONS": "Who is the Administrative Officer of the South Zone?",
+            "ANSWER": "Vamanan Namboothiri"
+        },
+        {
+            " QN NO": 57.0,
+            "QUESTIONS": "What are the different teaching-learning methods followed in \nthe college?\n\n\n\n\n\n",
+            "ANSWER": "Mentoring and Monitoring\nBridge Courses\nRemedial Coaching\nIndustrial Visit / Study Tour\nAdd-on Courses\nSpecial Importance for Communication Skills\nNational / International Seminars\nUGC-NET Oriented Classes"
+        },
+        {
+            " QN NO": 58.0,
+            "QUESTIONS": "Does the college provide bridge courses?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 59.0,
+            "QUESTIONS": "Are UGC-NET oriented classes conducted?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 60.0,
+            "QUESTIONS": "How is the campus environment described?",
+            "ANSWER": "Eco-friendly campus away from the hustle and bustle of the city"
+        },
+        {
+            " QN NO": 61.0,
+            "QUESTIONS": "Does the college have seminar halls?",
+            "ANSWER": "Yes, fully furnished seminar halls are available"
+        },
+        {
+            " QN NO": 62.0,
+            "QUESTIONS": "Does the college have National Service Scheme(NSS)?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 63.0,
+            "QUESTIONS": "What types of club activities are conducted?",
+            "ANSWER": "Various club activities and extension activities are conducted"
+        },
+        {
+            " QN NO": 64.0,
+            "QUESTIONS": "Are regular PTA meetings conducted?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 65.0,
+            "QUESTIONS": "Is there an Alumni Association?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 66.0,
+            "QUESTIONS": "What's the college pincode",
+            "ANSWER": 695601
+        },
+        {
+            " QN NO": 67.0,
+            "QUESTIONS": "Does the college have solar power? ",
+            "ANSWER": " Yes, the college has solar power."
+        },
+        {
+            " QN NO": 68.0,
+            "QUESTIONS": "How many periods are there in college in one day?",
+            "ANSWER": 5
+        },
+        {
+            " QN NO": 69.0,
+            "QUESTIONS": "Is CCTV available for examinations?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 70.0,
+            "QUESTIONS": "Does the college have a tourism club?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 71.0,
+            "QUESTIONS": "Is there a hostel nearby the college?",
+            "ANSWER": "Yes, there is a hostel."
+        },
+        {
+            " QN NO": 72.0,
+            "QUESTIONS": "Is there a hospital nearby the college?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 73.0,
+            "QUESTIONS": "How do I check my college exam result?",
+            "ANSWER": "Through the website (Students Login- University of Kerala )"
+        },
+        {
+            " QN NO": 74.0,
+            "QUESTIONS": "Does the college issue ID cards? ",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 75.0,
+            "QUESTIONS": "Is the college private? ",
+            "ANSWER": "The college is aided."
+        },
+        {
+            " QN NO": 76.0,
+            "QUESTIONS": "What's the minimum percentage of attendance required?",
+            "ANSWER": 0.75
+        },
+        {
+            " QN NO": 77.0,
+            "QUESTIONS": "How do I borrow books from the library?",
+            "ANSWER": "With a library card"
+        },
+        {
+            " QN NO": 78.0,
+            "QUESTIONS": "How many intervals are there in college per day?",
+            "ANSWER": "4 (each is after the period)"
+        },
+        {
+            " QN NO": 79.0,
+            "QUESTIONS": "Is the college office open on weekends? ",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 80.0,
+            "QUESTIONS": "Does the college have classes on weekends?",
+            "ANSWER": "No"
+        },
+        {
+            " QN NO": 81.0,
+            "QUESTIONS": "Are there online courses available? ",
+            "ANSWER": "No"
+        },
+        {
+            " QN NO": 82.0,
+            "QUESTIONS": "Are there any entrance exams? ",
+            "ANSWER": "No"
+        },
+        {
+            " QN NO": 83.0,
+            "QUESTIONS": "Are there online payment options? ",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 84.0,
+            "QUESTIONS": "What's the exam schedule?",
+            "ANSWER": "Semester-based"
+        },
+        {
+            " QN NO": 85.0,
+            "QUESTIONS": "Does the college have security? ",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": 86.0,
+            "QUESTIONS": "Is unauthorized gathering allowed inside the campus?",
+            "ANSWER": "No"
+        },
+        {
+            " QN NO": 87.0,
+            "QUESTIONS": "what will be the consequence of violating the norms? ",
+            "ANSWER": " Violation of norms will result in serious action."
+        },
+        {
+            " QN NO": 88.0,
+            "QUESTIONS": "What is the rule regarding damage to college property?",
+            "ANSWER": "Any damage done to college property will have to be made good"
+        },
+        {
+            " QN NO": 89.0,
+            "QUESTIONS": "What are the values and ethics for stakeholders?",
+            "ANSWER": "Integrity,trusteeship, harmony, accountability, inclusiveness, commitment, respectfulness, sustainability."
+        },
+        {
+            " QN NO": 90.0,
+            "QUESTIONS": "What is the procedure for adding CE marks?",
+            "ANSWER": "Assignment/Seminar :10 marks , Test paper :10 marks"
+        },
+        {
+            " QN NO": 91.0,
+            "QUESTIONS": "What is the pledge to the nation?\n\n\n\n",
+            "ANSWER": "India is my country.All Indians are my brothers and sisters.I love my country, and I am proud of its rich and varied heritage.\nI shall always strive to be worthy of it.\nI shall give my parents, teachers and all elders respect, and treat everyone with courtesy.\nTo my country and my people, I pledge my devotion.\nIn their well-being and prosperity alone lies my happiness."
+        },
+        {
+            " QN NO": 92.0,
+            "QUESTIONS": "What message does the national anthem give?",
+            "ANSWER": "It gives a message of unity, patriotism, and national pride."
+        },
+        {
+            " QN NO": 93.0,
+            "QUESTIONS": "What is our motto?",
+            "ANSWER": "Thamaso Ma Jyothirgamaya"
+        },
+        {
+            " QN NO": 94.0,
+            "QUESTIONS": "What are the important websites are? \n\n\n",
+            "ANSWER": " Kerala University :www.keralauniversity.ac.in \nUGC:www.ugc.ac.in \nNAAC:www.naac.gov.in\nSree Sankara vidyapeetom College :http://ssvcollegenagaroor.com"
+        },
+        {
+            " QN NO": 95.0,
+            "QUESTIONS": "Who are the rank holders in our college? \n\n\n",
+            "ANSWER": "3RD RANK A. ANANTHAKRISHNAN. BBA (2020-23)\n4TH RANK SOORYA. S MSC COMPUTER SCIENCE (2020-22)\n1ST RANK  ANIJA A MANOJ. MSC COMPUTER SCIENCE (2018-20)\n"
+        },
+        {
+            " QN NO": 96.0,
+            "QUESTIONS": "what is strongly banned  in the campus?",
+            "ANSWER": "Usage of alcohol, illegal drugs are strictly banned and prohibited in the campus. Such incident will be punishable"
+        },
+        {
+            " QN NO": 97.0,
+            "QUESTIONS": "Are alcohol and illegal drugs allowed in the campus?",
+            "ANSWER": "No"
+        },
+        {
+            " QN NO": 98.0,
+            "QUESTIONS": "Who is the Head/Faculty of the Department of Physical \nEducation?",
+            "ANSWER": "Mr. Lalu Krishnan B is the faculty of the Department of Physical Education."
+        },
+        {
+            " QN NO": 99.0,
+            "QUESTIONS": "Who are the non-teaching staff?\n\n\n\n\n\n\n",
+            "ANSWER": "Mr K sudheer :junior superintendent \nMs Lasitha T :Head accountant \nMs Athira M N :Cashier\nMs Smitha G L :Librarian\nMs Sreeja S N :Computer Lab Assistant \nMs Girija Devi K V :Office assistant \nMs Chithra L  :sweeper\nMs Ambika N :sweeper"
+        },
+        {
+            " QN NO": 100.0,
+            "QUESTIONS": "Does the college have sports teams?",
+            "ANSWER": "Yes"
+        },
+        {
+            " QN NO": NaN,
+            "QUESTIONS": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+            "ANSWER": null
+        }
+    ]
+}

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import User
 from academics.models import Department
 
-class CustomUserCreationForm(UserCreationForm):
+class CustomUserCreationForm(forms.ModelForm):
     department_fk = forms.ModelChoiceField(
         queryset=Department.objects.filter(is_active=True),
         required=False,
@@ -12,9 +12,20 @@ class CustomUserCreationForm(UserCreationForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
+        help_text="Enter a strong password."
+    )
+    
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}),
+        label="Confirm Password",
+        help_text="Enter the same password as above."
+    )
+    
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'role', 'department_fk', 'phone_number', 'password')
+        fields = ('username', 'email', 'first_name', 'last_name', 'role', 'department_fk', 'phone_number', 'password', 'confirm_password')
         help_texts = {
             'role': 'Select your primary role.',
             'department_fk': 'Select your department from the list.',
@@ -27,20 +38,44 @@ class CustomUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Allow signup for Super Admin, Admin, Student, HOD, and Faculty
+        # Allow signup for various roles with a default '--' option
         if 'role' in self.fields:
-            self.fields['role'].choices = [
+            self.fields['role'].choices = [('', '--')] + [
                 ('SUPER_ADMIN', 'Super Admin'),
                 ('ADMIN', 'Admin'),
                 ('HOD', 'Head of Department'),
                 ('FACULTY', 'Faculty Mentor'),
                 ('STUDENT', 'Student'),
+                ('PLACEMENT_OFFICER', 'Placement Officer'),
             ]
-            self.fields['role'].initial = 'STUDENT'
+            self.fields['role'].initial = ''
+            self.fields['role'].required = True
         
         if 'department_fk' in self.fields:
             self.fields['department_fk'].label = "Department"
-            self.fields['department_fk'].required = True
+    
+    def clean_role(self):
+        role = self.cleaned_data.get('role')
+        if not role or role == '':
+            raise forms.ValidationError("Please choose a role other than '--'.")
+        return role
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password and confirm_password and password != confirm_password:
+            self.add_error('confirm_password', "Passwords do not match.")
+        
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+        return user
 
 class FacultyCreationForm(CustomUserCreationForm):
     employee_id = forms.CharField(max_length=50, required=True, help_text="Unique employee ID")

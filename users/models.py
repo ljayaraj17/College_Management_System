@@ -38,6 +38,9 @@ class User(AbstractUser):
         limit_choices_to={'role__in': ['SUPER_ADMIN', 'ADMIN']}
     )
     approved_at = models.DateTimeField(null=True, blank=True)
+    attendance = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, help_text="Overall attendance percentage")
+    total_marks = models.DecimalField(max_digits=7, decimal_places=2, default=0.00, help_text="Total marks obtained")
+    gpa = models.DecimalField(max_digits=4, decimal_places=2, default=0.00, help_text="Overall GPA")
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"

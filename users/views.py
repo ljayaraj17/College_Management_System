@@ -14,6 +14,7 @@ from .forms import CustomUserCreationForm, FacultyCreationForm, AdminCreationFor
 from .models import User
 from .mixins import AdminRequiredMixin, SuperAdminRequiredMixin, HODRequiredMixin
 from .utils import send_approval_email
+from library.models import BorrowRecord
 
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
@@ -100,15 +101,38 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         """Context for student dashboard"""
         from placements.models import Application, JobPosting
         from interviews.models import InterviewSchedule
+        from announcements.models import Announcement
         from django.utils import timezone
         
+        from django.db.models import Q
+        user = self.request.user
+        
+        # Proper context-aware announcements for dashboard
+        q_filter = Q(target_audience='ALL') | Q(target_audience='STUDENTS')
+        if hasattr(user, 'student_profile') and user.student_profile.course:
+            q_filter |= Q(target_audience='DEPARTMENT', target_department=user.student_profile.course.department)
+            if user.student_profile.batch:
+                q_filter |= Q(target_audience='BATCH', target_batch=user.student_profile.batch)
+        
+        # Exclude personal posts from general ones to avoid duplication
+        general_announcements = Announcement.objects.filter(
+            q_filter, 
+            is_active=True
+        ).exclude(target_audience='INDIVIDUAL').order_by('-is_pinned', '-posted_at')[:5]
+
+        personal_posts = Announcement.objects.filter(
+            target_audience='INDIVIDUAL',
+            target_individual=user,
+            is_active=True
+        ).order_by('-posted_at')[:5]
+
         return {
             'pending_applications': Application.objects.filter(
-                student=self.request.user, 
+                student=user, 
                 status='APPLIED'
             ).count(),
             'upcoming_interviews': InterviewSchedule.objects.filter(
-                application__student=self.request.user,
+                application__student=user,
                 status='SCHEDULED',
                 date_time__gte=timezone.now()
             ).count(),
@@ -117,8 +141,10 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 deadline__gte=timezone.now()
             ).count(),
             'profile_completeness': getattr(
-                self.request.user, 'student_profile', None
-            ).get_profile_completeness() if hasattr(self.request.user, 'student_profile') else 0,
+                user, 'student_profile', None
+            ).get_profile_completeness() if hasattr(user, 'student_profile') else 0,
+            'personal_posts': personal_posts,
+            'general_announcements': general_announcements,
         }
     
     def get_faculty_context(self):
@@ -143,6 +169,23 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # Get actual User objects for these profiles
         mentees = User.objects.filter(student_profile__in=mentee_profiles).select_related('student_profile')
         
+        # Get taught subjects
+        taught_subjects = self.request.user.subjects_taught.filter(is_active=True).select_related('course')
+        
+        from announcements.models import Announcement
+        from django.db.models import Q
+        user = self.request.user
+        
+        # Proper context-aware announcements for faculty
+        q_filter = Q(target_audience='ALL') | Q(target_audience='FACULTY')
+        if user.department_fk:
+            q_filter |= Q(target_audience='DEPARTMENT', target_department=user.department_fk)
+            
+        announcements = Announcement.objects.filter(
+            q_filter,
+            is_active=True
+        ).order_by('-is_pinned', '-posted_at')[:5]
+        
         return {
             'pending_approvals': Application.objects.filter(
                 faculty_approved=False,
@@ -151,6 +194,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'mentees': mentees,
             'assignments': assignments,
             'total_students': mentees.count(),
+            'taught_subjects': taught_subjects,
+            'today_date': timezone.now().date().isoformat(),
+            'assigned_courses': assignments.values('course__id', 'course__name', 'course__code').distinct(),
+            'assigned_semesters': assignments.values_list('semester', flat=True).distinct().order_by('semester'),
+            'library_records': BorrowRecord.objects.filter(user=user).order_by('-request_date')[:5],
+            'announcements': announcements,
         }
     
     def get_admin_context(self):
@@ -182,6 +231,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         if not dept:
             return {}
         
+        from announcements.models import Announcement
+        recent_announcements = Announcement.objects.filter(
+            posted_by=self.request.user
+        ).order_by('-posted_at')[:5]
+
         return {
             'department': dept,
             'faculty_count': dept.members.filter(role='FACULTY', is_approved=True).count(),
@@ -196,6 +250,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 role='STUDENT',
                 is_approved=False
             ).count(),
+            'recent_announcements': recent_announcements,
         }
     
     def get_placement_context(self):

@@ -35,10 +35,19 @@ class Announcement(models.Model):
         ('DEPARTMENT', 'Department Only'),
         ('COURSE', 'Course Only'),
         ('BATCH', 'Batch Only'),
+        ('INDIVIDUAL', 'Individual Student Only'),
     ]
     
     title = models.CharField(max_length=200)
     content = models.TextField(help_text="Announcement content")
+    target_individual = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='personal_announcements',
+        help_text="Target a specific student for personalized notices"
+    )
     category = models.ForeignKey(
         AnnouncementCategory,
         on_delete=models.SET_NULL,
@@ -132,6 +141,9 @@ class Announcement(models.Model):
             if user.is_student and hasattr(user, 'student_profile'):
                 if user.student_profile.batch == self.target_batch:
                     return True
+        elif self.target_audience == 'INDIVIDUAL':
+            if self.target_individual == user:
+                return True
         
         return False
 

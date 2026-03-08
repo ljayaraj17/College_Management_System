@@ -26,6 +26,10 @@ urlpatterns = [
     path('student/', include('students.urls')),
     path('placements/', include('placements.urls')),
     path('announcements/', include('announcements.urls')),
+    path('attendance/', include('attendance.urls')),
+    path('marks/', include('marks.urls')),
+    path('ai/', include('ai_search.urls')),
+    path('library/', include('library.urls', namespace='library')),
 ]
 
 from django.conf import settings

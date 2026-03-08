@@ -47,6 +47,13 @@
         .sidebar-item-active {
             @apply bg-primary text-white shadow-lg shadow-primary/20;
         }
+        @keyframes pulse-subtle {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+        .animate-pulse-subtle {
+          animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -88,6 +95,11 @@
                 <span class="font-bold">Applications</span>
             </a>
             {% elif user.is_faculty %}
+            <a href="{% url 'faculty_attendance_subjects' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'attendance' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
+                <span class="material-symbols-outlined">assignment_turned_in</span>
+                <span class="font-bold">Attendance</span>
+            </a>
             <a href="#"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all">
                 <span class="material-symbols-outlined">group</span>
@@ -181,18 +193,28 @@
                 <span class="font-bold">Search Talent</span>
             </a>
             {% elif user.is_placement_cell or user.is_placement_officer %}
+            <a href="{% url 'create_job' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if request.resolver_match.url_name == 'create_job' %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
+                <span class="material-symbols-outlined">post_add</span>
+                <span class="font-bold">Post Placement</span>
+            </a>
             <a href="{% url 'manage_jobs' %}"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'manage' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
-                <span class="material-symbols-outlined">campaign</span>
-                <span class="font-bold">Job Notifications</span>
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if request.resolver_match.url_name == 'manage_jobs' %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
+                <span class="material-symbols-outlined">list_alt</span>
+                <span class="font-bold">Manage Postings</span>
+            </a>
+            <a href="{% url 'track_applications' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if request.resolver_match.url_name == 'track_applications' %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
+                <span class="material-symbols-outlined">fact_check</span>
+                <span class="font-bold">Track Applications</span>
             </a>
             <a href="{% url 'student_list' %}"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'student' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
-                <span class="material-symbols-outlined">fact_check</span>
-                <span class="font-bold">Eligibility</span>
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if request.resolver_match.url_name == 'student_list' %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
+                <span class="material-symbols-outlined">person_search</span>
+                <span class="font-bold">Student Eligibility</span>
             </a>
             <a href="{% url 'placement_analytics' %}"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'analytics' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if request.resolver_match.url_name == 'placement_analytics' %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
                 <span class="material-symbols-outlined">query_stats</span>
                 <span class="font-bold">Analytics</span>
             </a>
@@ -272,16 +294,317 @@
                 <span class="material-symbols-outlined text-[28px]">home</span>
                 <span class="text-[10px] font-medium">Home</span>
             </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+            <a class="flex flex-col items-center gap-1 text-slate-400" id="mobile-chat-trigger"
+                href="javascript:void(0)">
                 <span class="material-symbols-outlined text-[28px]">chat</span>
                 <span class="text-[10px] font-medium">AI Support</span>
             </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="{% url 'student_profile' %}">
                 <span class="material-symbols-outlined text-[28px]">person</span>
                 <span class="text-[10px] font-medium">Profile</span>
             </a>
         </div>
     </nav>
+
+    <!-- Professional AI Assistant (Unified Text & PDF) -->
+    <div class="fixed bottom-24 lg:bottom-10 right-6 z-[60]">
+        <!-- Main Toggle Button -->
+        <button id="ai-assistant-toggle"
+            class="size-16 bg-slate-950 dark:bg-white text-white dark:text-slate-950 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group relative border border-white/10 dark:border-slate-950/10">
+            <span
+                class="material-symbols-outlined text-3xl group-hover:rotate-6 transition-transform">auto_awesome</span>
+            <div
+                class="absolute -top-1 -right-1 px-1.5 py-0.5 bg-primary text-white text-[8px] font-black uppercase rounded shadow-lg tracking-tighter">
+                PRO</div>
+        </button>
+
+        <!-- Assistant Window -->
+        <div id="ai-assistant-window"
+            class="absolute bottom-20 lg:bottom-22 right-0 w-[90vw] max-w-[420px] h-[650px] bg-white dark:bg-slate-950 rounded-[2rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden transition-all duration-500 translate-y-10 opacity-0 pointer-events-none scale-95 origin-bottom-right">
+
+            <!-- Header -->
+            <div
+                class="p-6 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="size-12 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center">
+                        <span class="material-symbols-outlined uppercase">analytics</span>
+                    </div>
+                    <div>
+                        <h4 class="font-black leading-none text-slate-950 dark:text-white">EduPulse AI</h4>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1 font-bold">Pro Assistant</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="ai-assistant-reset"
+                        class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400"
+                        title="Clear Context">
+                        <span class="material-symbols-outlined text-xl">refresh</span>
+                    </button>
+                    <button id="ai-assistant-close"
+                        class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400">
+                        <span class="material-symbols-outlined text-xl">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div id="ai-assistant-content"
+                class="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth bg-slate-50/30 dark:bg-slate-900/10">
+                <div id="chat-messages" class="space-y-4">
+                    <!-- Initial Welcome Message -->
+                    <div class="flex gap-3">
+                        <div
+                            class="size-8 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shrink-0 shadow-sm border border-black/10">
+                            <span class="material-symbols-outlined text-sm">smart_toy</span>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-slate-800 p-4 rounded-2xl rounded-tl-none text-sm font-medium leading-relaxed text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            Greetings! I am your professional AI assistant. You can ask me any academic or
+                            administrative questions, or upload a PDF document for specialized analysis.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Context Info (Small Badge) -->
+            <div id="pdf-context-badge"
+                class="px-6 py-2 border-t border-slate-100 dark:border-slate-800 hidden bg-slate-50 dark:bg-slate-900/30 transition-all">
+                <div
+                    class="flex items-center justify-between text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/5 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                    <div class="flex items-center gap-2 truncate">
+                        <span class="material-symbols-outlined text-sm">description</span>
+                        Analysing: <span id="active-filename" class="truncate">document.pdf</span>
+                    </div>
+                    <button id="remove-pdf" class="hover:text-red-500 transition-colors">
+                        <span class="material-symbols-outlined text-sm">cancel</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Area (Unified) -->
+            <div id="chat-controls"
+                class="p-6 border-t border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-950">
+                <form id="assistant-form" class="flex items-center gap-2">
+                    <div class="flex-1 relative group">
+                        <input type="text" id="assistant-input"
+                            class="w-full bg-slate-100 dark:bg-slate-900 border-none rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-slate-950 dark:focus:ring-white outline-none dark:text-white transition-all shadow-inner pl-12"
+                            placeholder="Ask me anything..." autocomplete="off" />
+
+                        <!-- Upload Trigger -->
+                        <label for="pdf-input"
+                            class="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-primary transition-all cursor-pointer rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800">
+                            <span class="material-symbols-outlined text-2xl">attach_file</span>
+                        </label>
+                        <input type="file" id="pdf-input" class="hidden" accept=".pdf" />
+                    </div>
+
+                    <button type="submit" id="assistant-submit"
+                        class="size-14 bg-slate-950 dark:bg-white text-white dark:text-slate-950 rounded-2xl flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all">
+                        <span class="material-symbols-outlined text-2xl">send</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assistant Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('ai-assistant-toggle');
+            const mobileTrigger = document.getElementById('mobile-chat-trigger');
+            const windowEl = document.getElementById('ai-assistant-window');
+            const close = document.getElementById('ai-assistant-close');
+            const reset = document.getElementById('ai-assistant-reset');
+            const pdfInput = document.getElementById('pdf-input');
+            const pdfBadge = document.getElementById('pdf-context-badge');
+            const activeFilename = document.getElementById('active-filename');
+            const removePdfBtn = document.getElementById('remove-pdf');
+            const chatMessages = document.getElementById('chat-messages');
+            const assistantForm = document.getElementById('assistant-form');
+            const assistantInput = document.getElementById('assistant-input');
+            const contentArea = document.getElementById('ai-assistant-content');
+
+            let isBotOpen = false;
+
+            function toggleBot() {
+                isBotOpen = !isBotOpen;
+                if (isBotOpen) {
+                    windowEl.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none', 'scale-95');
+                } else {
+                    windowEl.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none', 'scale-95');
+                }
+            }
+
+            toggle.addEventListener('click', toggleBot);
+            if (mobileTrigger) mobileTrigger.addEventListener('click', toggleBot);
+            close.addEventListener('click', toggleBot);
+
+            async function clearServerSession() {
+                try {
+                    await fetch('/ai/assistant/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'reset' })
+                    });
+                } catch (e) { }
+            }
+
+            reset.addEventListener('click', async () => {
+                await clearServerSession();
+                chatMessages.innerHTML = `
+                    <div class="flex gap-3 animate-doc-in">
+                        <div class="size-8 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shrink-0 shadow-sm border border-black/10">
+                            <span class="material-symbols-outlined text-sm">smart_toy</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl rounded-tl-none text-sm font-medium leading-relaxed text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            Session context cleared. How can I help you from here?
+                        </div>
+                    </div>
+                `;
+                pdfBadge.classList.add('hidden');
+                pdfInput.value = '';
+            });
+
+            removePdfBtn.addEventListener('click', async () => {
+                await clearServerSession();
+                pdfBadge.classList.add('hidden');
+                pdfInput.value = '';
+                appendDocMessage("<i>Document context removed. I'm back to general assistance mode.</i>", false);
+            });
+
+            pdfInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('pdf_file', file);
+
+                // Show processing indicator in message flow
+                const procId = 'proc-' + Date.now();
+                const procMsg = document.createElement('div');
+                procMsg.id = procId;
+                procMsg.className = 'flex gap-3 animate-pulse';
+                procMsg.innerHTML = `
+                    <div class="size-8 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-sm animate-spin">sync</span>
+                    </div>
+                    <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl text-xs font-bold text-slate-500">
+                        Processing "${file.name}"...
+                    </div>
+                `;
+                chatMessages.appendChild(procMsg);
+                contentArea.scrollTop = contentArea.scrollHeight;
+
+                try {
+                    const response = await fetch('/ai/assistant/', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    document.getElementById(procId).remove();
+
+                    if (data.status === 'success') {
+                        pdfBadge.classList.remove('hidden');
+                        activeFilename.textContent = data.filename;
+                        appendDocMessage(`Professional Analysis Engine ready for: <b>${data.filename}</b>. What would you like to know?`, false);
+                    } else {
+                        alert(data.message || "Failed to process PDF.");
+                    }
+                } catch (err) {
+                    document.getElementById(procId).remove();
+                    alert("Error uploading PDF.");
+                }
+            });
+
+            function appendDocMessage(message, isUser = false) {
+                const wrapper = document.createElement('div');
+                wrapper.className = `flex gap-3 ${isUser ? 'flex-row-reverse' : ''} animate-doc-in`;
+
+                const icon = isUser ? 'person' : 'smart_toy';
+                const bg = isUser ? 'bg-slate-950 dark:bg-white' : 'bg-white dark:bg-slate-800';
+                const textCol = isUser ? 'text-white dark:text-slate-950' : 'text-slate-700 dark:text-slate-200';
+                const rounded = isUser ? 'rounded-tr-none' : 'rounded-tl-none';
+                const border = isUser ? '' : 'border border-slate-200 dark:border-slate-700';
+
+                wrapper.innerHTML = `
+                    <div class="size-8 rounded-lg ${isUser ? 'bg-primary text-white shadow-md' : 'bg-slate-950 dark:bg-white text-white dark:text-slate-950 shadow-sm'} flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-sm">${icon}</span>
+                    </div>
+                    <div class="${bg} ${textCol} ${rounded} ${border} p-4 rounded-2xl text-sm font-medium leading-relaxed max-w-[85%] shadow-sm">
+                        ${message.replace(/\n/g, '<br>')}
+                    </div>
+                `;
+                chatMessages.appendChild(wrapper);
+                contentArea.scrollTop = contentArea.scrollHeight;
+            }
+
+            assistantForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = assistantInput.value.trim();
+                if (!text) return;
+
+                assistantInput.value = '';
+                appendDocMessage(text, true);
+
+                // Typing indicator
+                const typingId = 'doc-typing-' + Date.now();
+                const typing = document.createElement('div');
+                typing.id = typingId;
+                typing.className = 'flex gap-3 animate-pulse';
+                typing.innerHTML = `
+                    <div class="size-8 rounded-lg bg-slate-950 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-sm">smart_toy</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl rounded-tl-none flex gap-1 items-center border border-slate-200 dark:border-slate-700">
+                        <div class="size-1.5 bg-slate-400 rounded-full animate-bounce"></div>
+                        <div class="size-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                        <div class="size-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                    </div>
+                `;
+                chatMessages.appendChild(typing);
+                contentArea.scrollTop = contentArea.scrollHeight;
+
+                try {
+                    const response = await fetch('/ai/assistant/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: text })
+                    });
+                    const data = await response.json();
+
+                    document.getElementById(typingId).remove();
+
+                    if (data.status === 'success') {
+                        appendDocMessage(data.message);
+                    } else {
+                        appendDocMessage("Error: " + data.message);
+                    }
+                } catch (err) {
+                    if (document.getElementById(typingId)) document.getElementById(typingId).remove();
+                    appendDocMessage("Network error occurred.");
+                }
+            });
+        });
+    </script>
+
+    <style>
+        @keyframes doc-in {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-doc-in {
+            animation: doc-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+    </style>
 </body>
 
 </html>

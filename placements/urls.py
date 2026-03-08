@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     JobPostingListView, JobPostingCreateView, JobPostingUpdateView, JobPostingDeleteView,
-    PlacementAnalyticsView, StudentListView, StudentDetailView, VerifyCertificateView
+    PlacementAnalyticsView, StudentListView, StudentDetailView, VerifyCertificateView,
+    ApplicationListView
 )
 
 urlpatterns = [
@@ -10,6 +11,7 @@ urlpatterns = [
     path('update/<int:pk>/', JobPostingUpdateView.as_view(), name='update_job'),
     path('delete/<int:pk>/', JobPostingDeleteView.as_view(), name='delete_job'),
     path('analytics/', PlacementAnalyticsView.as_view(), name='placement_analytics'),
+    path('track-applications/', ApplicationListView.as_view(), name='track_applications'),
     
     # Student Management & Verification
     path('students/', StudentListView.as_view(), name='student_list'),
