@@ -7,7 +7,7 @@ from openai import OpenAI
 # It will automatically use OPENAI_API_KEY from environment variables
 
 #client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="ENTER API KEY")
 def get_ai_generated_questions(subject_name, semester, course_name):
     """
     Generate 10 MCQ questions using OpenAI based on subject, semester and course.

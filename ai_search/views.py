@@ -10,7 +10,7 @@ from pypdf import PdfReader
 from openai import OpenAI
 
 # Initialize OpenAI client
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="ENTER API KEY HERE")
 
 class PDFChatAssistantView(View):
     def post(self, request):
