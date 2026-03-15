@@ -30,6 +30,7 @@ urlpatterns = [
     path('marks/', include('marks.urls')),
     path('ai/', include('ai_search.urls')),
     path('library/', include('library.urls', namespace='library')),
+    path('assignments/', include('assignments.urls')),
 ]
 
 from django.conf import settings

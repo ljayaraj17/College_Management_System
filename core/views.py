@@ -17,6 +17,7 @@ class LandingPageView(TemplateView):
 class CollegeChatbotView(View):
     def post(self, request):
         try:
+            print("text")
             data = json.loads(request.body)
             user_message = data.get('message', '')
             
@@ -53,4 +54,5 @@ class CollegeChatbotView(View):
             return JsonResponse({'status': 'success', 'message': ai_message})
             
         except Exception as e:
+            print(e)
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

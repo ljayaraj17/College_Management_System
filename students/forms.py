@@ -1,7 +1,7 @@
 from django import forms
 from .models import StudentProfile
 from users.models import User
-from academics.models import Department
+from academics.models import Department, Course
 
 class StudentProfileForm(forms.ModelForm):
     # Include department from User model as a dropdown
@@ -13,6 +13,12 @@ class StudentProfileForm(forms.ModelForm):
     )
     first_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=30, required=False)
+    course = forms.ModelChoiceField(
+        queryset=Course.objects.all(),
+        required=False,
+        empty_label="Select Course",
+        help_text="Your enrolled course"
+    )
 
     class Meta:
         model = StudentProfile
@@ -33,6 +39,19 @@ class StudentProfileForm(forms.ModelForm):
             self.fields['department'].initial = user.department_fk
             self.fields['first_name'].initial = user.first_name
             self.fields['last_name'].initial = user.last_name
+
+        # Dynamic filtering for course dropdown
+        if 'department' in self.data:
+            try:
+                department_id = int(self.data.get('department'))
+                self.fields['course'].queryset = Course.objects.filter(department_id=department_id).order_by('name')
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty queryset
+        elif self.instance.pk and self.instance.user.department_fk:
+            self.fields['course'].queryset = self.instance.user.department_fk.courses.all().order_by('name')
+        elif user and user.department_fk:
+             self.fields['course'].queryset = user.department_fk.courses.all().order_by('name')
+
 
     def save(self, commit=True):
         profile = super().save(commit=False)

@@ -1,16 +1,15 @@
-from django.contrib.auth.views import LoginView
-from django.views.generic import CreateView, TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from .forms import CustomUserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
 from django.views.generic import CreateView, TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
+from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from django.utils import timezone
-from .forms import CustomUserCreationForm, FacultyCreationForm, AdminCreationForm
+from .forms import (
+    CustomUserCreationForm, FacultyCreationForm, 
+    AdminCreationForm, AdminStudentCreationForm
+)
 from .models import User
 from .mixins import AdminRequiredMixin, SuperAdminRequiredMixin, HODRequiredMixin
 from .utils import send_approval_email
@@ -131,6 +130,18 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             is_active=True
         ).order_by('-posted_at')[:5]
 
+        from assignments.models import Assignment
+        
+        # Calculate assignments count
+        assignments_count = 0
+        if hasattr(user, 'student_profile') and user.student_profile.course:
+            assignments_count = Assignment.objects.filter(
+                subject__course=user.student_profile.course,
+                subject__semester=user.student_profile.current_semester,
+                is_active=True,
+                due_date__gte=timezone.now()
+            ).count()
+
         return {
             'pending_applications': Application.objects.filter(
                 student=user, 
@@ -145,6 +156,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 is_active=True,
                 deadline__gte=timezone.now()
             ).count(),
+            'assignments_count': assignments_count,
             'profile_completeness': getattr(
                 user, 'student_profile', None
             ).get_profile_completeness() if hasattr(user, 'student_profile') else 0,
@@ -155,6 +167,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 course=getattr(user, 'student_profile').course,
                 semester=getattr(user, 'student_profile').current_semester
             ).select_related('faculty', 'subject')[:4] if hasattr(user, 'student_profile') and user.student_profile.course else [],
+            'recent_assignments': Assignment.objects.filter(
+                subject__course=getattr(user, 'student_profile').course,
+                subject__semester=getattr(user, 'student_profile').current_semester,
+                is_active=True,
+                due_date__gte=timezone.now()
+            ).select_related('faculty', 'subject').order_by('due_date')[:4] if hasattr(user, 'student_profile') and user.student_profile.course else [],
         }
     
     def get_faculty_context(self):
@@ -221,14 +239,28 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         from django.db.models import Count, Q
         
         # Basic Stats
+        user = self.request.user
+        pending_approvals_query = User.objects.filter(is_approved=False, is_active=False)
+        
+        if user.role == 'SUPER_ADMIN':
+            # Super Admin sees non-students
+            pending_count = pending_approvals_query.exclude(role='STUDENT').count()
+        elif user.role == 'ADMIN':
+            # Admin sees only students
+            pending_count = pending_approvals_query.filter(role='STUDENT').count()
+        else:
+            pending_count = pending_approvals_query.count()
+
+        # Announcement feed
+        from announcements.models import Announcement
+        
         context = {
             'total_users': User.objects.count(),
-            'pending_approvals': User.objects.filter(
-                is_approved=False, is_active=False
-            ).count(),
+            'pending_approvals_count': pending_count,
             'total_departments': Department.objects.filter(is_active=True).count() if Department.objects.exists() else 0,
             'active_jobs': JobPosting.objects.filter(is_active=True).count() if JobPosting.objects.exists() else 0,
             'total_applications': Application.objects.count() if Application.objects.exists() else 0,
+            'announcements': Announcement.objects.filter(is_active=True).order_by('-is_pinned', '-posted_at')[:5],
         }
 
         # Academic Performance Analytics (Pass/Fail)
@@ -352,11 +384,11 @@ class UserApprovalListView(LoginRequiredMixin, HODRequiredMixin, ListView):
         
         # Filter based on role permissions
         if user.role == 'SUPER_ADMIN':
-            # Super Admin can see all pending users
-            return queryset
+            # Super Admin can see all pending users EXCEPT Students
+            return queryset.exclude(role='STUDENT')
         elif user.role == 'ADMIN':
-            # Admin can see Students, Placement Officers, Faculty
-            return queryset.filter(role__in=['STUDENT', 'PLACEMENT_OFFICER', 'FACULTY'])
+            # Admin can ONLY see Students
+            return queryset.filter(role='STUDENT')
         elif user.role == 'HOD':
             # HOD can see Faculty and Students in their department
             dept = user.departments_headed.first() or user.department_fk
@@ -383,10 +415,15 @@ def approve_user(request, pk):
         if user_to_approve.role not in ['FACULTY', 'STUDENT'] or user_to_approve.department_fk != dept:
             messages.error(request, "You can only approve members in your department.")
             return redirect('user_approval')
+    elif request.user.role == 'SUPER_ADMIN':
+        # Super Admin can approve all users EXCEPT Students
+        if user_to_approve.role == 'STUDENT':
+            messages.error(request, "Super Admin cannot approve students. This must be done by an Admin.")
+            return redirect('user_approval')
     elif request.user.role == 'ADMIN':
-        # Admin can approve Students, Placement Officers, Faculty (but not Admin/HOD)
-        if user_to_approve.role in ['ADMIN', 'HOD', 'SUPER_ADMIN']:
-            messages.error(request, "You cannot approve users with Admin or higher roles.")
+        # Admin can ONLY approve Students
+        if user_to_approve.role != 'STUDENT':
+            messages.error(request, "Admins can only approve student accounts. Other roles must be approved by Super Admin.")
             return redirect('user_approval')
     
     if action == 'approve':
@@ -450,15 +487,13 @@ class FacultyCreateView(LoginRequiredMixin, HODRequiredMixin, CreateView):
 class AdminStudentCreateView(LoginRequiredMixin, HODRequiredMixin, CreateView):
     """Admin can create Student accounts directly"""
     model = User
-    form_class = CustomUserCreationForm
+    form_class = AdminStudentCreationForm
     template_name = 'users/admin_student_create.html'
     success_url = reverse_lazy('dashboard')
     
     def form_valid(self, form):
         user = form.save(commit=False)
-        password = self.request.POST.get('password')
-        if password:
-            user.set_password(password)
+        # Form already handles password hashing in its save() method
         user.role = 'STUDENT'
         user.is_approved = True
         user.is_active = True

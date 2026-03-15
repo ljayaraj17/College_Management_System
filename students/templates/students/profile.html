@@ -32,7 +32,7 @@
                 {% else %}
                 <div
                     class="relative size-36 md:size-48 bg-slate-800 backdrop-blur-md rounded-full border-2 border-white/10 flex items-center justify-center text-4xl font-black md:text-6xl text-white">
-                    {% firstof user.first_name|first user.username|first|upper %}
+                    {% firstof profile.user.first_name|first profile.user.username|first|upper %}
                 </div>
                 {% endif %}
                 <div class="absolute bottom-2 right-2 size-10 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center shadow-lg"
@@ -48,10 +48,10 @@
                     Next-Gen Student Profile
                 </div>
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tight">
-                    {% firstof user.get_full_name user.username %}
+                    {% firstof profile.user.get_full_name profile.user.username %}
                 </h1>
                 <p class="text-slate-300 text-lg md:text-xl font-medium mb-8 max-w-2xl">
-                    {{ user.department|default:"Academic Track Unset" }}
+                    {{ profile.user.department|default:"Academic Track Unset" }}
                     {% if profile.batch %}
                     <span class="mx-3 opacity-30">|</span> Class of {{ profile.batch }}
                     {% endif %}
@@ -89,7 +89,7 @@
                 </div>
                 <div
                     class="bg-primary/20 backdrop-blur-md px-6 py-4 rounded-2xl border border-primary/20 text-right group hover:bg-primary/30 transition-all cursor-default">
-                    <div class="text-4xl font-black text-primary-400 mb-1 group-hover:scale-110 transition-transform">{{ user.certificates.all|length|default:"0" }}</div>
+                    <div class="text-4xl font-black text-primary-400 mb-1 group-hover:scale-110 transition-transform">{{ profile.user.certificates.all|length|default:"0" }}</div>
                     <p class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Verified Assets</p>
                 </div>
             </div>
@@ -261,7 +261,7 @@
                         <div>
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Institutional
                                 Email</p>
-                            <p class="font-bold text-slate-700 dark:text-slate-200 text-sm">{{ user.email }}</p>
+                            <p class="font-bold text-slate-700 dark:text-slate-200 text-sm">{{ profile.user.email }}</p>
                         </div>
                     </div>
                     <div
@@ -273,7 +273,7 @@
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Academic
                                 Department</p>
                             <p class="font-bold text-slate-700 dark:text-slate-200 text-sm">{{
-                                user.department|default:"Assignment Pending" }}</p>
+                                profile.user.department|default:"Assignment Pending" }}</p>
                         </div>
                     </div>
                 </div>

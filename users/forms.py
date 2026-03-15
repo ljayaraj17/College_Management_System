@@ -139,6 +139,18 @@ class HODCreationForm(CustomUserCreationForm):
             raise forms.ValidationError("A user with this employee ID already exists.")
         return employee_id
 
+class AdminStudentCreationForm(CustomUserCreationForm):
+    """Form for admins to create student accounts directly"""
+    class Meta(CustomUserCreationForm.Meta):
+        fields = ('username', 'email', 'first_name', 'last_name', 'department_fk', 'phone_number', 'password', 'confirm_password')
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'role' in self.fields:
+            del self.fields['role'] # Role is fixed to STUDENT in view
+        self.fields['department_fk'].required = True
+        self.fields['department_fk'].label = "Department"
+
 class UserApprovalForm(forms.ModelForm):
     """Form for approving/rejecting users"""
     class Meta:

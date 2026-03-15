@@ -79,7 +79,10 @@ ROOT_URLCONF = 'EduCareer_Connect.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'attendance' / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'attendance' / 'templates',
+            BASE_DIR / 'assignments' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

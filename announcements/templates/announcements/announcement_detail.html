@@ -13,14 +13,11 @@
         <div class="relative z-10 space-y-8">
             <div class="space-y-4">
                 <div class="flex flex-wrap gap-2 text-xs font-black uppercase tracking-widest">
-                    <span class="px-3 py-1 bg-primary/10 text-primary rounded-full">{{
-                        announcement.category.name|default:"General" }}</span>
+                    <span class="px-3 py-1 bg-primary/10 text-primary rounded-full">{{ announcement.category.name|default:"General" }}</span>
                     {% if announcement.priority != 'MEDIUM' %}
-                    <span class="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full">{{
-                        announcement.get_priority_display }}</span>
+                    <span class="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full">{{ announcement.get_priority_display }}</span>
                     {% endif %}
-                    <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full">{{
-                        announcement.posted_at|date:"d M Y" }}</span>
+                    <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full">{{ announcement.posted_at|date:"d M Y" }}</span>
                 </div>
 
                 <h1 class="text-3xl md:text-5xl font-black leading-tight">{{ announcement.title }}</h1>

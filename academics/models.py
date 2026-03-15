@@ -313,3 +313,41 @@ class StudyMaterial(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.course.code} (Sem {self.semester})"
+
+class TimetableDocument(models.Model):
+    """Model for timetable documents uploaded by faculty"""
+    title = models.CharField(max_length=200)
+    file = models.FileField(upload_to='timetables/')
+    faculty = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='timetables_uploaded',
+        limit_choices_to={'role': 'FACULTY'}
+    )
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.CASCADE,
+        related_name='timetable_documents'
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='timetable_documents'
+    )
+    semester = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(16)],
+        help_text="Target semester"
+    )
+    academic_year = models.CharField(max_length=20, help_text="e.g., 2024-2025")
+    section = models.CharField(max_length=10, blank=True, null=True, help_text="Section (optional, e.g., A, B)")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Timetable Document"
+        verbose_name_plural = "Timetable Documents"
+
+    def __str__(self):
+        return f"{self.title} - {self.course.code} (Sem {self.semester})"

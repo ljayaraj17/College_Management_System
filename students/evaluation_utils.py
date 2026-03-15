@@ -5,7 +5,6 @@ try:
     from openai import OpenAI
     # Initialize OpenAI client
     # It will automatically use OPENAI_API_KEY from environment variables
-    #client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 except ImportError:
     client = None

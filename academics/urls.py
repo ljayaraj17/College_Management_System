@@ -9,9 +9,14 @@ from .views import (
     AcademicAdvisorListView, AcademicAdvisorCreateView,
     AcademicAdvisorUpdateView, AcademicAdvisorDeleteView,
     MaterialListView, MaterialCreateView, MaterialDeleteView,
+    TimetableDocumentListView, TimetableDocumentCreateView, TimetableDocumentDeleteView,
+    load_courses,
 )
 
 urlpatterns = [
+    # AJAX
+    path('ajax/load-courses/', load_courses, name='ajax_load_courses'),
+
     # Departments
     path('departments/', DepartmentListView.as_view(), name='department_list'),
     path('departments/add/', DepartmentCreateView.as_view(), name='department_create'),
@@ -47,5 +52,9 @@ urlpatterns = [
     path('materials/', MaterialListView.as_view(), name='material_list'),
     path('materials/add/', MaterialCreateView.as_view(), name='material_create'),
     path('materials/<int:pk>/delete/', MaterialDeleteView.as_view(), name='material_delete'),
+    # Timetable Documents (File-based)
+    path('timetable-docs/', TimetableDocumentListView.as_view(), name='timetable_doc_list'),
+    path('timetable-docs/add/', TimetableDocumentCreateView.as_view(), name='timetable_doc_create'),
+    path('timetable-docs/<int:pk>/delete/', TimetableDocumentDeleteView.as_view(), name='timetable_doc_delete'),
 ]
 

@@ -159,14 +159,13 @@
                             </div>
                         </div>
 
-                        <!-- Course -->
                         <div class="space-y-2">
                             <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Associated Course</label>
                             <div class="relative group">
                                 <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">school</span>
-                                <input type="text" name="course" id="{{ form.course.id_for_label }}"
-                                    class="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/50 border-2 border-transparent focus:border-primary/30 focus:ring-4 focus:ring-primary/5 rounded-2xl text-sm font-bold text-slate-900 dark:text-white transition-all"
-                                    placeholder="e.g. B.Tech Computer Science" value="{{ form.course.value|default:'' }}">
+                                <div class="custom-select-wrapper">
+                                    {{ form.course }}
+                                </div>
                             </div>
                         </div>
 
@@ -423,6 +422,29 @@
                 }
             });
         });
+
+        // Dependent Dropdown Logic
+        const departmentSelect = document.querySelector('select[name="department"]');
+        const courseSelect = document.querySelector('select[name="course"]');
+
+        if (departmentSelect && courseSelect) {
+            departmentSelect.addEventListener('change', function() {
+                const url = "{% url 'ajax_load_courses' %}";
+                const departmentId = this.value;
+
+                if (!departmentId) {
+                    courseSelect.innerHTML = '<option value="">Select Course</option>';
+                    return;
+                }
+
+                fetch(`${url}?department_id=${departmentId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        courseSelect.innerHTML = '<option value="">Select Course</option>' + html;
+                    });
+            });
+        }
     });
+
 </script>
 {% endblock %}

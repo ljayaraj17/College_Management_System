@@ -155,8 +155,8 @@
                 <span class="material-symbols-outlined">person</span>
                 <span class="font-bold">Faculty Assignment</span>
             </a>
-            <a href="#"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all">
+            <a href="{% url 'announcement_list' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'announcement' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
                 <span class="material-symbols-outlined">campaign</span>
                 <span class="font-bold">Announcements</span>
             </a>
@@ -166,8 +166,8 @@
                 <span class="font-bold">Academic Data</span>
             </a>
             {% elif user.is_hod %}
-            <a href="#"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all">
+            <a href="{% url 'announcement_list' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl {% if 'announcement' in request.resolver_match.url_name %}sidebar-item-active{% else %}text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary transition-all{% endif %}">
                 <span class="material-symbols-outlined">campaign</span>
                 <span class="font-bold">Dept Notices</span>
             </a>

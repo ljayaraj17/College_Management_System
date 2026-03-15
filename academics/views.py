@@ -3,8 +3,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
-from .models import Department, Course, Subject, Enrollment, TimeSlot, Timetable, AcademicAdvisor, StudyMaterial
-from .forms import AcademicAdvisorForm, CourseForm, StudyMaterialForm
+from .models import Department, Course, Subject, Enrollment, TimeSlot, Timetable, AcademicAdvisor, StudyMaterial, TimetableDocument
+from .forms import AcademicAdvisorForm, CourseForm, StudyMaterialForm, TimetableDocumentForm
 from users.mixins import AdminRequiredMixin, HODRequiredMixin, FacultyRequiredMixin, StudentRequiredMixin, AdminOrHODRequiredMixin
 
 
@@ -324,3 +324,54 @@ class MaterialDeleteView(LoginRequiredMixin, FacultyRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Study material deleted successfully.")
         return super().delete(request, *args, **kwargs)
+
+# Timetable Document Views (File-based)
+class TimetableDocumentListView(LoginRequiredMixin, ListView):
+    model = TimetableDocument
+    template_name = 'academics/timetable_document_list.html'
+    context_object_name = 'timetable_docs'
+    paginate_by = 12
+
+    def get_queryset(self):
+        queryset = TimetableDocument.objects.all().select_related('faculty', 'department', 'course')
+        
+        if self.request.user.is_student:
+            enrollment = Enrollment.objects.filter(student=self.request.user, is_active=True).first()
+            if enrollment:
+                queryset = queryset.filter(
+                    course=enrollment.course,
+                    semester=enrollment.current_semester,
+                )
+        elif self.request.user.is_faculty:
+            queryset = queryset.filter(faculty=self.request.user)
+            
+        return queryset
+
+class TimetableDocumentCreateView(LoginRequiredMixin, FacultyRequiredMixin, CreateView):
+    model = TimetableDocument
+    form_class = TimetableDocumentForm
+    template_name = 'academics/timetable_document_form.html'
+    success_url = reverse_lazy('timetable_doc_list')
+
+    def form_valid(self, form):
+        form.instance.faculty = self.request.user
+        messages.success(self.request, f"Timetable '{form.instance.title}' uploaded successfully!")
+        return super().form_valid(form)
+
+class TimetableDocumentDeleteView(LoginRequiredMixin, FacultyRequiredMixin, DeleteView):
+    model = TimetableDocument
+    template_name = 'academics/timetable_document_confirm_delete.html'
+    success_url = reverse_lazy('timetable_doc_list')
+
+    def get_queryset(self):
+        return TimetableDocument.objects.filter(faculty=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "Timetable document deleted successfully.")
+        return super().delete(request, *args, **kwargs)
+
+
+def load_courses(request):
+    department_id = request.GET.get('department_id')
+    courses = Course.objects.filter(department_id=department_id, is_active=True).order_by('name')
+    return render(request, 'academics/course_dropdown_list_options.html', {'courses': courses})

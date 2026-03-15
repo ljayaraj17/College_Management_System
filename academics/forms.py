@@ -1,5 +1,5 @@
 from django import forms
-from .models import AcademicAdvisor, Course, StudyMaterial, Subject
+from .models import AcademicAdvisor, Course, StudyMaterial, Subject, TimetableDocument
 from users.models import User
 
 class AcademicAdvisorForm(forms.ModelForm):
@@ -80,3 +80,28 @@ class StudyMaterialForm(forms.ModelForm):
             # No changes needed here for now.
 
 from django.db.models import Q
+
+class TimetableDocumentForm(forms.ModelForm):
+    class Meta:
+        model = TimetableDocument
+        fields = ['title', 'file', 'department', 'course', 'semester', 'academic_year', 'section', 'is_active']
+        widgets = {
+            'title': forms.TextInput(attrs={'placeholder': 'e.g., Odd Semester Timetable 2024'}),
+            'semester': forms.NumberInput(attrs={'min': 1, 'max': 16, 'placeholder': 'e.g. 1'}),
+            'academic_year': forms.TextInput(attrs={'placeholder': 'e.g. 2024-2025'}),
+            'section': forms.TextInput(attrs={'placeholder': 'e.g. A (Optional)'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Apply premium styling
+        for field in self.fields:
+            if not isinstance(self.fields[field].widget, forms.FileInput):
+                self.fields[field].widget.attrs.update({
+                    'class': 'w-full h-12 bg-white/5 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium'
+                })
+            else:
+                self.fields[field].widget.attrs.update({
+                    'class': 'w-full py-3 bg-white/5 dark:bg-background-dark border border-dashed border-slate-200 dark:border-slate-800 rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white font-medium'
+                })
+

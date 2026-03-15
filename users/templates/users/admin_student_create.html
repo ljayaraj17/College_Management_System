@@ -151,27 +151,38 @@
                         <div class="group">
                             <label
                                 class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Department
-                                Identifier (Text)</label>
-                            <div class="relative">
+                                <span class="text-primary">*</span></label>
+                            <div class="relative custom-select-wrapper">
                                 <span
-                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">corporate_fare</span>
-                                <input type="text" name="department"
-                                    class="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-white font-medium"
-                                    placeholder="e.g. Computer Science and Engineering"
-                                    value="{{ form.department.value|default:'' }}">
+                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl z-20">corporate_fare</span>
+                                {{ form.department_fk }}
                             </div>
+                            {% if form.department_fk.errors %}<p class="text-red-500 text-[10px] font-bold mt-2 ml-1">{{ form.department_fk.errors.as_text }}</p>{% endif %}
                         </div>
 
-                        <div class="group">
-                            <label
-                                class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Security:
-                                Set Initial Password <span class="text-primary">*</span></label>
-                            <div class="relative">
-                                <span
-                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">lock_reset</span>
-                                <input type="password" name="password"
-                                    class="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-white"
-                                    placeholder="Set a secure initial password" required>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="group">
+                                <label
+                                    class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Set Initial Password <span class="text-primary">*</span></label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">lock_reset</span>
+                                    <input type="password" name="password"
+                                        class="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-white"
+                                        placeholder="Password" required>
+                                </div>
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Confirm Password <span class="text-primary">*</span></label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">verified_user</span>
+                                    <input type="password" name="confirm_password"
+                                        class="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-white"
+                                        placeholder="Confirm" required>
+                                </div>
+                                {% if form.confirm_password.errors %}<p class="text-red-500 text-[10px] font-bold mt-2 ml-1">{{ form.confirm_password.errors.as_text }}</p>{% endif %}
                             </div>
                         </div>
                     </div>
