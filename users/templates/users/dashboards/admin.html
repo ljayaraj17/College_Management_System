@@ -55,10 +55,6 @@
                         class="text-xs font-bold text-emerald-500 hover:underline flex items-center gap-1">
                         Student Enrollment <span class="material-symbols-outlined text-sm">app_registration</span>
                     </a>
-                    <a href="{% url 'subject_create' %}"
-                        class="text-xs font-bold text-emerald-500 hover:underline flex items-center gap-1">
-                        Faculty-Subject Mapping <span class="material-symbols-outlined text-sm">link</span>
-                    </a>
                 </div>
             </div>
         </div>
@@ -153,18 +149,11 @@
                     departments.</p>
                 <div class="grid grid-cols-2 gap-3">
                     <a href="{% url 'faculty_list' %}"
-                        class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-center hover:bg-primary/10 transition-all group">
+                        class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-center hover:bg-primary/10 transition-all group col-span-2">
                         <span
                             class="material-symbols-outlined mb-2 group-hover:text-primary transition-colors">people</span>
                         <h4 class="text-xs font-bold uppercase transition-colors group-hover:text-primary">Faculty List
                         </h4>
-                    </a>
-                    <a href="{% url 'enrollment_create' %}"
-                        class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-center hover:bg-primary/10 transition-all group">
-                        <span
-                            class="material-symbols-outlined mb-2 group-hover:text-primary transition-colors">assignment_add</span>
-                        <h4 class="text-xs font-bold uppercase transition-colors group-hover:text-primary">Assign
-                            Subjects</h4>
                     </a>
                 </div>
             </div>

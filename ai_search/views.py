@@ -99,49 +99,88 @@ class PDFChatAssistantView(View):
                 user = request.user
                 if hasattr(user, 'is_faculty') and user.is_faculty:
                     from academics.models import AcademicAdvisor
-                    from students.models import StudentProfile
+                    from students.models import StudentProfile, SubjectEvaluation
+                    from marks.models import InternalMark
+                    from interviews.models import InterviewSchedule
                     from django.contrib.auth import get_user_model
+                    from django.db.models import Avg
                     User = get_user_model()
                     
-                    # Fetch mentee data similar to DashboardView
-                    assignments = AcademicAdvisor.objects.filter(faculty=user, is_active=True)
-                    mentees_list = []
-                    
-                    if assignments.exists():
-                        for assignment in assignments:
+                    # Fetch student data for the faculty's department or mentees
+                    if user.department_fk:
+                        student_users = User.objects.filter(role='STUDENT', department_fk=user.department_fk).select_related('student_profile')
+                    else:
+                        assignments = AcademicAdvisor.objects.filter(faculty=user, is_active=True)
+                        if assignments.exists():
                             profiles = StudentProfile.objects.filter(
-                                course=assignment.course,
-                                current_semester=assignment.semester
+                                course__in=assignments.values_list('course', flat=True),
+                                current_semester__in=assignments.values_list('semester', flat=True)
                             )
-                            # Get users with attendance data
-                            mentee_users = User.objects.filter(student_profile__in=profiles).select_related('student_profile')
-                            for m in mentee_users:
-                                mentees_list.append({
-                                    'name': m.get_full_name() or m.username,
-                                    'id': m.username,
-                                    'attendance': float(m.attendance or 0),
-                                    'course': m.student_profile.course.code if m.student_profile.course else "N/A",
-                                    'semester': m.student_profile.current_semester,
-                                    'cgpa': float(m.student_profile.cgpa or 0)
-                                })
+                            student_users = User.objects.filter(student_profile__in=profiles).select_related('student_profile')
+                        else:
+                            student_users = User.objects.none()
                     
-                    if mentees_list:
-                        mentee_data_str = "\n".join([
-                            f"- {m['name']} (ID: {m['id']}): Attendance: {m['attendance']}%, Course: {m['course']}, Sem: {m['semester']}, CGPA: {m['cgpa']}"
-                            for m in mentees_list
+                    students_list = []
+                    for s in student_users:
+                        # Skills
+                        skills = s.student_profile.skills if hasattr(s, 'student_profile') and s.student_profile else "N/A"
+                        
+                        # Exam performance (Internal Marks average percentage)
+                        marks = InternalMark.objects.filter(student=s)
+                        if marks.exists():
+                            total_obtained = float(sum(m.marks_obtained for m in marks))
+                            total_max = float(sum(m.max_marks for m in marks))
+                            exam_avg = (total_obtained / total_max) * 100 if total_max > 0 else 0
+                        else:
+                            exam_avg = 0
+                            
+                        # Mock Interview performance (AI Subject Evaluations)
+                        evals = SubjectEvaluation.objects.filter(student=s)
+                        mock_avg = float(evals.aggregate(Avg('score'))['score__avg'] or 0)
+                        
+                        # Latest AI Evaluation Detail (corresponds to /student/evaluations/result/)
+                        latest_eval = evals.order_by('-created_at').first()
+                        eval_feedback = latest_eval.ai_feedback if latest_eval else "N/A"
+                        
+                        # CGPA and Attendance
+                        cgpa = float(s.student_profile.cgpa or 0) if hasattr(s, 'student_profile') and s.student_profile else 0
+                        attendance = float(s.attendance or 0)
+                        
+                        # Placement Mock Interview performance (InterviewSchedule)
+                        interviews = InterviewSchedule.objects.filter(application__student=s, status='COMPLETED').order_by('-date_time')
+                        placement_feedback = interviews.first().feedback if interviews.exists() else "No feedback yet"
+                        
+                        students_list.append({
+                            'name': s.get_full_name() or s.username,
+                            'id': s.username,
+                            'skills': skills,
+                            'exam_avg': round(exam_avg, 2),
+                            'mock_avg': round(mock_avg, 2),
+                            'latest_eval_feedback': eval_feedback[:150] + "..." if len(eval_feedback) > 150 else eval_feedback,
+                            'placement_feedback': placement_feedback[:150] + "..." if len(placement_feedback) > 150 else placement_feedback,
+                            'cgpa': cgpa,
+                            'attendance': attendance
+                        })
+                    
+                    if students_list:
+                        student_data_str = "\n".join([
+                            f"- {s['name']} (ID: {s['id']}): Skills: {s['skills']}, Exam Avg: {s['exam_avg']}%, Mock Interview (Subject) Avg: {s['mock_avg']}%, AI Evaluation Feedback: {s['latest_eval_feedback']}, Placement Mock Feedback: {s['placement_feedback']}, CGPA: {s['cgpa']}, Attendance: {s['attendance']}%"
+                            for s in students_list
                         ])
                         
                         system_prompt += f"""
                         
-                        Faculty Specific Context:
-                        You have access to the following students (your mentees):
-                        {mentee_data_str}
+                        Faculty Specific Context (Student Performance & Skills):
+                        You have access to the following students in your department/mentorship:
+                        {student_data_str}
                         
-                        Special Instructions for Faculty:
-                        1. You can answer questions about which students are available for volunteering.
-                        2. Recommendations for volunteers should generally prioritize students with high attendance (above 85%) and good CGPA.
-                        3. If a student has low attendance (below 75%), they should NOT be recommended for volunteering as they need to focus on classes to meet eligibility requirements.
-                        4. When asked about volunteering, provide a list of top candidates and explain why you recommended them based on their attendance and academic standing.
+                        Special Instructions for Faculty Queries:
+                        1. **Finding Capable Students**: When asked for students with a specific skill, search the 'Skills' field. Recommend students who have that skill and also have good academic standing (CGPA/Marks).
+                        2. **Best in Exams**: Identify top performers based on 'Exam Avg' and 'CGPA'.
+                        3. **Career Readiness**: Use 'Mock Interview (Subject) Avg', 'AI Evaluation Feedback' (from subject-specific tests), and 'Placement Mock Feedback' to assess a student's readiness and specific strengths/weaknesses.
+                        4. **Result Analysis**: If asked about a student's performance in a specific test or evaluation result, use the 'AI Evaluation Feedback' provided for context on what they did well or where they need improvement.
+                        5. **Volunteering/Recommendations**: Prioritize students with high attendance (above 85%) and strong overall performance. Do NOT recommend students with attendance below 75% for extra-curriculur tasks.
+                        6. Provide a clear rationale for your recommendations based on the data provided above.
                         """
 
             response = client.chat.completions.create(
