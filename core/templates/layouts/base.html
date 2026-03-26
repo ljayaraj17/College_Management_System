@@ -25,13 +25,13 @@
 
         {% if user.is_authenticated %}
         <!-- Sidebar -->
-        <div class="bg-dark text-white" id="sidebar-wrapper">
-            <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+        <div class="bg-white border-end shadow-sm" id="sidebar-wrapper">
+            <div class="sidebar-heading text-center py-4 text-primary fs-4 fw-bold text-uppercase border-bottom">
                 <i class="fas fa-graduation-cap me-2"></i>Campus Flow
             </div>
             <div class="list-group list-group-flush my-3">
                 <a href="{% url 'dashboard' %}"
-                    class="list-group-item list-group-item-action bg-transparent text-white fw-bold {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    class="list-group-item list-group-item-action bg-transparent text-secondary fw-bold {% if request.resolver_match.url_name == 'dashboard' %}active text-white bg-primary{% endif %}">
                     <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                 </a>
 
