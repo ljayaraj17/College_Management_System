@@ -533,6 +533,9 @@
         const chatToggle = document.getElementById('chatbot-toggle');
         const chatWindow = document.getElementById('chatbot-window');
         const chatClose = document.getElementById('chatbot-close');
+        const chatForm = document.getElementById('chatbot-form');
+        const chatInput = document.getElementById('chatbot-input');
+        const chatMessages = document.getElementById('chatbot-messages');
         
         let isOpen = false;
         function toggleChat() {
@@ -547,6 +550,62 @@
         }
         chatToggle?.addEventListener('click', toggleChat);
         chatClose?.addEventListener('click', toggleChat);
+
+        chatForm?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if(!text) return;
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'flex gap-3 justify-end mt-4';
+            userMsg.innerHTML = '<div class="bg-primary text-white p-4 rounded-2xl rounded-tr-none text-sm font-medium">' + text + '</div>';
+            chatMessages.appendChild(userMsg);
+            
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Show typing indicator
+            const typingMsg = document.createElement('div');
+            typingMsg.className = 'flex gap-3 mt-4';
+            typingMsg.id = 'typing-indicator';
+            typingMsg.innerHTML = '<div class="bg-slate-100 p-4 rounded-2xl rounded-tl-none text-sm font-medium text-slate-600 animate-pulse">Thinking...</div>';
+            chatMessages.appendChild(typingMsg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch('/chatbot/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: text })
+                });
+                
+                const data = await response.json();
+                document.getElementById('typing-indicator').remove();
+                
+                const botMsg = document.createElement('div');
+                botMsg.className = 'flex gap-3 mt-4';
+                if(data.status === 'success') {
+                    // Convert newlines to breaks
+                    let formattedMsg = data.message.replace(/\n/g, '<br>');
+                    botMsg.innerHTML = '<div class="bg-slate-100 p-4 rounded-2xl rounded-tl-none text-sm font-medium text-slate-600 leading-relaxed">' + formattedMsg + '</div>';
+                } else {
+                    botMsg.innerHTML = '<div class="bg-red-100 p-4 rounded-2xl rounded-tl-none text-sm font-medium text-red-600">Sorry, I encountered an error. Please try again.</div>';
+                }
+                chatMessages.appendChild(botMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+            } catch(error) {
+                document.getElementById('typing-indicator').remove();
+                const botMsg = document.createElement('div');
+                botMsg.className = 'flex gap-3 mt-4';
+                botMsg.innerHTML = '<div class="bg-red-100 p-4 rounded-2xl rounded-tl-none text-sm font-medium text-red-600">Network error. Please try again later.</div>';
+                chatMessages.appendChild(botMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
     </script>
 </body>
 
